@@ -1,4 +1,17 @@
-## Welcome to GitHub Pages
+## Ruosi Zha
+
+- Ph.D candidate at Memorial Uniersity of Newfoundland (2015 - Present) 
+  - Ocean & Naval Architecture Engineering
+  - Fluid-Structure Interaction & Slamming & Water Entry & Wave Impact
+  - Computational Fluid Dynamics
+  - Moving Particle Semi-implicit method
+  
+- Master at Shanghai Jiao Tong University (2012 - 2015) 
+  - Naval Architecture & Ocean Engineering
+  - Fluid-Structure Interaction & Slamming & Water Entry & Wave Impact
+  - Computational Fluid Dynamics
+  - Moving Particle Semi-implicit method
+  
 
 You can use the [editor on GitHub](https://github.com/zharuosi/zharuosi.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
 
