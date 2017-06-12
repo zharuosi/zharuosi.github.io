@@ -12,6 +12,9 @@
   - Computational Fluid Dynamics
   - Reynolds-averaged Navier–Stokes
   
+- Bachelor at Huazhong University of Science & Technology(2008 - 2012) 
+  - Naval Architecture & Ocean Engineering
+
 ---
 
 You can use the [editor on GitHub](https://github.com/zharuosi/zharuosi.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
