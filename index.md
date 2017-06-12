@@ -14,6 +14,7 @@
   
 - Bachelor at Huazhong University of Science & Technology(2008 - 2012) 
   - Naval Architecture & Ocean Engineering
+  - GPA: 3.xx/4.0  &  Ranking: 15/200
 
 ---
 
