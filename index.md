@@ -1,5 +1,5 @@
-# <center>Ruosi Zha</center>
 
+### Education
 - Ph.D candidate at Memorial Uniersity of Newfoundland (2015 - Present) 
   - Ocean & Naval Architecture Engineering
   - Fluid-Structure Interaction & Slamming & Water Entry & Wave Impact
