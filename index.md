@@ -1,4 +1,4 @@
-## Ruosi Zha
+# <center>Ruosi Zha</center>
 
 - Ph.D candidate at Memorial Uniersity of Newfoundland (2015 - Present) 
   - Ocean & Naval Architecture Engineering
@@ -8,10 +8,11 @@
   
 - Master at Shanghai Jiao Tong University (2012 - 2015) 
   - Naval Architecture & Ocean Engineering
-  - Fluid-Structure Interaction & Slamming & Water Entry & Wave Impact
+  - Added resistance in waves & Multi-phase flow
   - Computational Fluid Dynamics
-  - Moving Particle Semi-implicit method
+  - Reynolds-averaged Navier–Stokes
   
+---
 
 You can use the [editor on GitHub](https://github.com/zharuosi/zharuosi.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
 
