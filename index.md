@@ -54,4 +54,4 @@ Your Pages site will use the layout and styles from the Jekyll theme you have se
 
 Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
 
-![](https://www.dropbox.com/s/g8atwjw8kd3uzak/db-rubber-multi.gif?dl=0)
+![](https://www.dropbox.com/pri/get/PhD/animation/db-rubber-multi.gif?_subject_uid=41898173&raw=1&size=1600x1200&size_mode=3&w=AADiYVu1kGF9YeCyIKsjfW9zYhpiOnvQLQoKKcR1Aeuqig)
