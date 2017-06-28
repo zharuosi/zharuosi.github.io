@@ -2,21 +2,34 @@
 ### Education
 - Ph.D candidate at Memorial Uniersity of Newfoundland (2015 - Present) 
   - Ocean & Naval Architecture Engineering
-  - Fluid-Structure Interaction & Slamming & Water Entry & Wave Impact
-  - Computational Fluid Dynamics
-  - Moving Particle Semi-implicit method
-  
+  - Adanced Marine Hydrodynamics Laboratory 
+
 - Master at Shanghai Jiao Tong University (2012 - 2015) 
   - Naval Architecture & Ocean Engineering
-  - Added resistance in waves & Multi-phase flow
-  - Computational Fluid Dynamics
-  - Reynolds-averaged Navier–Stokes
+  - Computational Marine Hydrodynamics Laboratory
   
 - Bachelor at Huazhong University of Science & Technology(2008 - 2012) 
   - Naval Architecture & Ocean Engineering
-  - GPA: 3.x/4.0  &  Ranking: 15/200
+  - GPA: 3.5/4.0  &  Ranking: 15/200
 
 ---
+
+### Research Interest
+- Computational Fluid Dynamics & Marine hydrodynamics
+- Moving Particle Semi-implicit method & Lagrangian particle method
+- Fluid-Structure Interaction & Slamming & Water Entry & Wave Impact
+- Added resistance in waves & seakeeping & Multi-phase flow 
+- High performance ship
+
+---
+
+### Publication
+- https://scholar.google.ca/citations?user=ha5zv8IAAAAJ&hl=en
+
+1. ZHA, R. S., YE, H. X., SHEN, Z. R., & WAN, D. C. (2015). Numerical computations of resistance of high speed catamaran in calm water. Journal of Hydrodynamics, Ser. B, 26(6), 930-938.
+
+2. ZHA, R. S., YE, H. X., SHEN, Z. R., & WAN, D. C. (2014). Numerical study of viscous wave-making resistance of ship navigation in still water. Journal of Marine Science and Application, 13(2), 158-166.
+
 
 You can use the [editor on GitHub](https://github.com/zharuosi/zharuosi.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
 
