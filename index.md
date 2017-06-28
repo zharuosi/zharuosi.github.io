@@ -24,7 +24,7 @@
 ---
 
 ### Publication
-- https://scholar.google.ca/citations?user=ha5zv8IAAAAJ&hl=en
+[](https://scholar.google.ca/citations?user=ha5zv8IAAAAJ&hl=en)
 
 1. ZHA, R. S., YE, H. X., SHEN, Z. R., & WAN, D. C. (2015). Numerical computations of resistance of high speed catamaran in calm water. Journal of Hydrodynamics, Ser. B, 26(6), 930-938.
 
