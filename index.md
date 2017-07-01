@@ -26,7 +26,7 @@
 ### Publication
 [Reference](https://scholar.google.ca/citations?user=ha5zv8IAAAAJ&hl=en)
 
-1. Zha, R., Peng, H., & Qiu, W. Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWFB 2017.
+1. Zha, R., Peng, H., & Qiu, W. Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWWFB 2017.
 
 1. ZHA, R. S., YE, H. X., SHEN, Z. R., & WAN, D. C. (2015). Numerical computations of resistance of high speed catamaran in calm water. Journal of Hydrodynamics, Ser. B, 26(6), 930-938.
 
