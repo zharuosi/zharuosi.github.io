@@ -17,8 +17,8 @@
 ### Research Interest
 - Computational Fluid Dynamics & Marine hydrodynamics
 - Moving Particle Semi-implicit method & Lagrangian particle method
-- Fluid-Structure Interaction & Slamming & Water Entry & Wave Impact
-- Added resistance in waves & seakeeping & Multi-phase flow 
+- Fluid-Structure Interaction & Slamming & Water entry & Wave impact
+- Added resistance in waves & Seakeeping & Multi-phase flow 
 - High performance ship (catamaran)
 
 ---
@@ -28,9 +28,9 @@
 
 1. Zha, R., Peng, H., & Qiu, W. Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWWFB 2017.
 
-1. ZHA, R. S., YE, H. X., SHEN, Z. R., & WAN, D. C. (2015). Numerical computations of resistance of high speed catamaran in calm water. Journal of Hydrodynamics, Ser. B, 26(6), 930-938.
+2. ZHA, R. S., YE, H. X., SHEN, Z. R., & WAN, D. C. (2015). Numerical computations of resistance of high speed catamaran in calm water. Journal of Hydrodynamics, Ser. B, 26(6), 930-938.
 
-2. ZHA, R. S., YE, H. X., SHEN, Z. R., & WAN, D. C. (2014). Numerical study of viscous wave-making resistance of ship navigation in still water. Journal of Marine Science and Application, 13(2), 158-166.
+3. ZHA, R. S., YE, H. X., SHEN, Z. R., & WAN, D. C. (2014). Numerical study of viscous wave-making resistance of ship navigation in still water. Journal of Marine Science and Application, 13(2), 158-166.
 
 
 You can use the [editor on GitHub](https://github.com/zharuosi/zharuosi.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
