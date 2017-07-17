@@ -26,12 +26,15 @@
 ### Publication
 [Reference](https://scholar.google.ca/citations?user=ha5zv8IAAAAJ&hl=en)
 
-1. Zha, R., Peng, H., & Qiu, W. Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWWFB 2017.
+1. Zha, R., Peng, H., Qiu, W. Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWWFB 2017.
 
-2. ZHA, R. S., YE, H. X., SHEN, Z. R., & WAN, D. C. (2015). Numerical computations of resistance of high speed catamaran in calm water. Journal of Hydrodynamics, Ser. B, 26(6), 930-938.
+2. ZHA, R. S., YE, H. X., SHEN, Z. R., WAN, D. C. (2015). Numerical computations of resistance of high speed catamaran in calm water. Journal of Hydrodynamics, Ser. B, 26(6), 930-938.
 
-3. ZHA, R. S., YE, H. X., SHEN, Z. R., & WAN, D. C. (2014). Numerical study of viscous wave-making resistance of ship navigation in still water. Journal of Marine Science and Application, 13(2), 158-166.
+3. ZHA, R. S., YE, H. X., SHEN, Z. R., WAN, D. C. (2014). Numerical study of viscous wave-making resistance of ship navigation in still water. Journal of Marine Science and Application, 13(2), 158-166.
 
+4. ZHA, R. S., SHEN, Z. R., WAN, D. C. RANS simulation on added resistance of ship sailing in different regular wave conditions. Proceedings of the 13th National Congress on Hydrodynamics & 26th National Conference on Hydrodynamics, Qingdao, China, 2014.  
+
+5. ZHA, R. S., FENG. G., HE J. Y., YE, H. X., WAN, D. C. Effect of different hull forms on the ship resistance performance in still water. Proceedings of the 12th National Congress on Hydrodynamics & 25th National Conference on Hydrodynamics, Zhoushan, China, 2013. 
 
 You can use the [editor on GitHub](https://github.com/zharuosi/zharuosi.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
 
