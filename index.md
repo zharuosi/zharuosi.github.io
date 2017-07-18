@@ -8,7 +8,7 @@
   - Naval Architecture & Ocean Engineering
   - Computational Marine Hydrodynamics Laboratory
   
-- Bachelor at Huazhong University of Science & Technology(2008 - 2012) 
+- Bachelor at Huazhong University of Science & Technology (2008 - 2012) 
   - Naval Architecture & Ocean Engineering
   - GPA: 3.5/4.0  &  Ranking: 15/200
 
@@ -19,7 +19,7 @@
 - Moving Particle Semi-implicit method & Lagrangian particle method
 - Fluid-Structure Interaction & Slamming & Water entry & Wave impact
 - Added resistance in waves & Seakeeping & Multi-phase flow 
-- High performance ship (catamaran)
+- High performance ship (Catamaran)
 
 ---
 
@@ -35,6 +35,8 @@
 4. ZHA, R. S., SHEN, Z. R., WAN, D. C. RANS simulation on added resistance of ship sailing in different regular wave conditions. Proceedings of the 13th National Congress on Hydrodynamics & 26th National Conference on Hydrodynamics, Qingdao, China, 2014.  
 
 5. ZHA, R. S., FENG. G., HE J. Y., YE, H. X., WAN, D. C. Effect of different hull forms on the ship resistance performance in still water. Proceedings of the 12th National Congress on Hydrodynamics & 25th National Conference on Hydrodynamics, Zhoushan, China, 2013. 
+
+6. Ruoshi Cha and Decheng Wan, Numerical Investigation of Motion Response of Two Model Ships in Regular Waves, Proceedings of 8th International Conference on Asian and Pacific Coasts (APAC 2015), IIT Madras, Chennai, India, July 7-10, 2015, Procedia Engineering, 2015, Vol. 116, pp. 20-31.
 
 You can use the [editor on GitHub](https://github.com/zharuosi/zharuosi.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
 
