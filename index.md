@@ -26,7 +26,7 @@
 ### Publication
 [Reference](https://scholar.google.ca/citations?user=ha5zv8IAAAAJ&hl=en)
 
-1. Zha, R., Peng, H., Qiu, W. Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWWFB 2017.
+1. Zha, R., Peng, H., Qiu, W. (2017) Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWWFB 2017.
 
 2. ZHA, R. S., YE, H. X., SHEN, Z. R., WAN, D. C. (2015). Numerical computations of resistance of high speed catamaran in calm water. Journal of Hydrodynamics, Ser. B, 26(6), 930-938.
 
@@ -38,28 +38,17 @@
 
 6. Ruoshi Cha and Decheng Wan, Numerical Investigation of Motion Response of Two Model Ships in Regular Waves, Proceedings of 8th International Conference on Asian and Pacific Coasts (APAC 2015), IIT Madras, Chennai, India, July 7-10, 2015, Procedia Engineering, 2015, Vol. 116, pp. 20-31.
 
+---
+
+### Project
+
+
+
 You can use the [editor on GitHub](https://github.com/zharuosi/zharuosi.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
 
 [Link](url) and ![Image](src)
 ```
