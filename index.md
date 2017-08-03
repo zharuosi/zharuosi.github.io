@@ -43,14 +43,21 @@
 ### Project
 
 -	Study on added resistance in waves (Personal Research)
+
 Added resistance and ship motions of Wigley ship models and Delft-372 catamaran advancing in regular head waves were investigated using the RANS solver naoe-FOAM-SJTU; the relations between added resistance coefficient and wave parameters were studied.
+
 -	Ship resistance of vessels with different hull forms (Group Leader)
+
 Several conditions were considered (0.06<Fn<0.28); two draft conditions were calculated; the effects of different hull forms on resistance performance were studied, including bulb bow and dead wood; the error of resistance is less than 5%; 3D modeling, mesh generation, numerical computation, post processing, final report were completed. 
+
 -	Resistance and seakeeping performance of research vessels (Cooperative Investigator) 
+
 The influences of special acoustic devices on flow field and resistance performance of research vessels in still water were studied; the motion and stability of the ship with bilge keel in beam sea conditions were simulated.
+
 -	Numerical simulation of the separation of oil and water in a tank (Principle Investigator)
-Primary stage: Considered a portion of petroleum stored under a portion of water in a tank. The separating process of water and petroleum was simulated using OpenFOAM with VOF method.
-Second stage: The process of instilling petroleum and draining water was simulated.  
+
+  -Primary stage: Considered a portion of petroleum stored under a portion of water in a tank. The separating process of water and petroleum was simulated using OpenFOAM with VOF method.
+  -Second stage: The process of instilling petroleum and draining water was simulated.  
 
 
 
