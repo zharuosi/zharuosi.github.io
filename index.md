@@ -14,7 +14,7 @@
 
 ---
 
-### Research Interest
+### Research Highlights
 - Computational Fluid Dynamics & Marine hydrodynamics
 - Moving Particle Semi-implicit method & Lagrangian particle method
 - Fluid-Structure Interaction & Slamming & Water entry & Wave impact
@@ -23,7 +23,7 @@
 
 ---
 
-### Publication
+### Publications
 [Reference](https://scholar.google.ca/citations?user=ha5zv8IAAAAJ&hl=en)
 
 1. Zha, R., Peng, H., Qiu, W. (2017) Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWWFB 2017.
@@ -40,7 +40,7 @@
 
 ---
 
-### Project
+### Projects
 
 -	Study on added resistance in waves (Personal Research)
 
@@ -56,9 +56,12 @@ The influences of special acoustic devices on flow field and resistance performa
 
 -	Numerical simulation of the separation of oil and water in a tank (Principle Investigator)
 
-  - Primary stage: Considered a portion of petroleum stored under a portion of water in a tank. The separating process of water and petroleum was simulated using OpenFOAM with VOF method.
-  
-  - Second stage: The process of instilling petroleum and draining water was simulated.  
+Considered a portion of petroleum stored under a portion of water in a tank. The separating process of water and petroleum was simulated using OpenFOAM with VOF method.In the next stage, the process of instilling petroleum and draining water was simulated. 
+
+---
+
+### Awards
+
 
 
 
