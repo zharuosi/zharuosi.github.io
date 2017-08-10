@@ -56,7 +56,7 @@ The influences of special acoustic devices on flow field and resistance performa
 
 -	Numerical simulation of the separation of oil and water in a tank (Principle Investigator)
 
-Considered a portion of petroleum stored under a portion of water in a tank. The separating process of water and petroleum was simulated using OpenFOAM with VOF method.In the next stage, the process of instilling petroleum and draining water was simulated. 
+Considered a portion of petroleum stored under a portion of water in a tank. The separating process of water and petroleum was simulated by OpenFOAM. In the next stage, the process of instilling petroleum and draining water was simulated. 
 
 ---
 
