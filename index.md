@@ -42,7 +42,7 @@
 
 ### Projects
 
--	Study on added resistance in waves (Personal Research)
+-	Added resistance in waves for monohull and catamaran (Personal Research)
 
 Added resistance and ship motions of Wigley ship models and Delft-372 catamaran advancing in regular head waves were investigated using the RANS solver naoe-FOAM-SJTU; the relations between added resistance coefficient and wave parameters were studied.
 
