@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>JDK 之 ArrayList 和 LinkedList 源码阅读笔记 | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Java,ArrayList,LinkedList," />
+  
+
+  <meta name="description" content="类声明123public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt; implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializablepublic class LinkedList&amp;lt;E&amp;gt; extends AbstractSequentialLi">
+<meta name="keywords" content="Java,ArrayList,LinkedList">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JDK 之 ArrayList 和 LinkedList 源码阅读笔记">
+<meta property="og:url" content="https://emacsist.github.io/2017/07/04/JDK-之-ArrayList-和-LinkedList-源码阅读笔记/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="类声明123public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt; implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializablepublic class LinkedList&amp;lt;E&amp;gt; extends AbstractSequentialLi">
+<meta property="og:updated_time" content="2017-07-04T08:17:47.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JDK 之 ArrayList 和 LinkedList 源码阅读笔记">
+<meta name="twitter:description" content="类声明123public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt; implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializablepublic class LinkedList&amp;lt;E&amp;gt; extends AbstractSequentialLi">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#类声明"><span class="toc-text">类声明</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#共同点"><span class="toc-text">共同点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#区别"><span class="toc-text">区别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意点"><span class="toc-text">注意点</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#删除元素"><span class="toc-text">删除元素</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#同步的-List"><span class="toc-text">同步的 List</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Vector"><span class="toc-text">Vector</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vector-还是-Collections-synchronizedList"><span class="toc-text">Vector 还是 Collections.synchronizedList ?</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-JDK-之-ArrayList-和-LinkedList-源码阅读笔记" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            JDK 之 ArrayList 和 LinkedList 源码阅读笔记
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.07.04</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#ArrayList">
+        <span class="tag-name">ArrayList</span>
+    <span class="tag-size">( 1 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#Java">
+        <span class="tag-name">Java</span>
+    <span class="tag-size">( 14 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#LinkedList">
+        <span class="tag-name">LinkedList</span>
+    <span class="tag-size">( 1 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <h1 id="类声明"><a href="#类声明" class="headerlink" title="类声明"></a>类声明</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public class ArrayList&lt;E&gt; extends AbstractList&lt;E&gt; implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable</div><div class="line"></div><div class="line">public class LinkedList&lt;E&gt; extends AbstractSequentialList&lt;E&gt; implements List&lt;E&gt;, Deque&lt;E&gt;, Cloneable, java.io.Serializable</div></pre></td></tr></table></figure>
+<p>其中</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public abstract class AbstractSequentialList&lt;E&gt; extends AbstractList&lt;E&gt;</div></pre></td></tr></table></figure>
+<p>可以看到，它们的共同点是</p>
+<ol>
+<li>都继承 <em>AbstractList</em> 类</li>
+<li>都实现了 List<e> 接口 </e></li>
+<li>都实现了 Cloneable 接口</li>
+<li>都实现了 Serializable 接口</li>
+</ol>
+<p>区别</p>
+<p>ArrayList 实现了 <em>RandomAccess</em> 接口，因为它底层是使用数组（会自动 resize）来维护的，而数组是可随机访问的。<br>LinkedList 实现了 <em>Deque<e></e></em> 接口，该接口是一个支持两端元素插入和移除的线性集合。它是英文 <em>double ended queue</em> 的简写。</p>
+<h1 id="共同点"><a href="#共同点" class="headerlink" title="共同点"></a>共同点</h1><ol>
+<li>它们都不是线程安全的，因为它们的方法并没有任何同步语义</li>
+<li>它们都是 List 这个数据结构的实现（有序列表）</li>
+</ol>
+<h1 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h1><ol>
+<li>实现上不同。ArrayList 使用的是动态数组来维护该列表，而 LinkedList 使用的是双向链表来实现</li>
+<li>根据实现的不同，就决定了它们各自的特点：ArrayList 读取性能快(O(1))，而 LinkedList 修改（插入或删除）性能快(O(1))</li>
+<li>内存占用不同因为链表是使用前后指针来进行维护的，所以要占用一些额外的内存占用，而数组实现的方式则不需要。</li>
+</ol>
+<h1 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h1><p>因为 <em>ArrayList</em> 使用的是动态数组来维护，所以为了避免频繁地进行数组的内存分配与复制，最好要事先估算它的大小，然后提供足够的容量大小因子(这个参数只有在 ArrayList 才会有)来初始化它。</p>
+<p>扩容的触发条件:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">private void ensureExplicitCapacity(int minCapacity) &#123;</div><div class="line">    modCount++;</div><div class="line"></div><div class="line">    // overflow-conscious code</div><div class="line">    <span class="keyword">if</span> (minCapacity - elementData.length &gt; 0)</div><div class="line">        grow(minCapacity);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>即 <em>minCapacity - elementData.length &gt; 0</em> 时，就需要扩容了。扩容源码:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">private void grow(int minCapacity) &#123;</div><div class="line">    // overflow-conscious code</div><div class="line">    int oldCapacity = elementData.length;</div><div class="line">    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);</div><div class="line">    <span class="keyword">if</span> (newCapacity - minCapacity &lt; 0)</div><div class="line">        newCapacity = minCapacity;</div><div class="line">    <span class="keyword">if</span> (newCapacity - MAX_ARRAY_SIZE &gt; 0)</div><div class="line">        newCapacity = hugeCapacity(minCapacity);</div><div class="line">    // minCapacity is usually close to size, so this is a win:</div><div class="line">    elementData = Arrays.copyOf(elementData, newCapacity);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先，将大小扩大为原内部维护的数组大小的 oldCapacity + (oldCapacity&gt;&gt;1)，即 1.5 倍（右移一位，相当于除以2，即 oldCapacity + oldCapacity/2）<br>如果扩大后的大小，还是小于 minCapacity ，则 newCapacity = minCapacity，否则是扩大后1.5倍的大小为基准<br>将再 newCapacity 与 <em>MAX_ARRAY_SIZE</em> 比较，判断是不是超大数组，如果是超大数组，则以 <em>Integer.MAX_VALUE</em> 为最终的扩大大小。</p>
+<p>注意，<em>initCapacity</em> 是在一开始的时候，就会 <em>new Object[initCapacity]</em> 大小的Object数组引用的了。</p>
+<h2 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h2><p>如果想在循环里删除元素，一定要用 <em>Iterator</em> 来进行 <em>remove</em> ，而不要使用 List.remove() ！！</p>
+<h1 id="同步的-List"><a href="#同步的-List" class="headerlink" title="同步的 List"></a>同步的 List</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">List list = Collections.synchronizedList(new ArrayList());</div></pre></td></tr></table></figure>
+<p>通过源码注释可知，这种 List ，在进行迭代的时候，需要手动同步(其他的通过 Collections.synchronizedXXXX() 返回的对象也一样):</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">* &lt;pre&gt;</div><div class="line">*  List list = Collections.synchronizedList(new ArrayList());</div><div class="line">*      ...</div><div class="line">*  synchronized (list) &#123;</div><div class="line">*      Iterator i = list.iterator(); // Must be <span class="keyword">in</span> synchronized block</div><div class="line">*      <span class="keyword">while</span> (i.hasNext())</div><div class="line">*          foo(i.next());</div><div class="line">*  &#125;</div><div class="line">* &lt;/pre&gt;</div></pre></td></tr></table></figure>
+<h2 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public class Vector&lt;E&gt; extends AbstractList&lt;E&gt; implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable</div></pre></td></tr></table></figure>
+<p>可以看到它和 <em>ArrayList</em> 实现的接口和继承的类都是一样的。最最主要的区别就是，这个类是线程安全的，因为它的所有涉及线程安全的方法，都添加了 <em>synchronized</em> 关键字来进行同步了。</p>
+<p>它和 ArrayList 的扩容大小不同:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">int newCapacity = oldCapacity + ((capacityIncrement &gt; 0) ? capacityIncrement : oldCapacity);</div></pre></td></tr></table></figure>
+<p><em>capacityIncrement</em> 可以通过构造函数来提供，默认为0，即如果不提供 <em>capacityIncrement</em> 参数，则以2倍的大小来进行扩容。</p>
+<h2 id="Vector-还是-Collections-synchronizedList"><a href="#Vector-还是-Collections-synchronizedList" class="headerlink" title="Vector 还是 Collections.synchronizedList ?"></a>Vector 还是 Collections.synchronizedList ?</h2><p>这个问题，首先要考虑你之前是否已经有了 List 的数据。因为如果之前已经有了数据的，但想转换为同步的数据，这时它们的区别是:</p>
+<p>Vector ： 虽然它有个构造函数，提供以另一个 Collection 类型为参数来进行初始化，不过，这会 <em>导致复制数据</em>，即完全是以 Vector 为基准了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public Vector(Collection&lt;? extends E&gt; c) &#123;</div><div class="line">    elementData = c.toArray();</div><div class="line">    elementCount = elementData.length;</div><div class="line">    // c.toArray might (incorrectly) not <span class="built_in">return</span> Object[] (see 6260652)</div><div class="line">    <span class="keyword">if</span> (elementData.getClass() != Object[].class)</div><div class="line">        elementData = Arrays.copyOf(elementData, elementCount, Object[].class);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Collections.synchronizedList ： 这种方式，只是一种包装，即它不会进行数据复制，底层还是引用了相同的数据结构，只是在方法上提供了同步的语义（synchronized）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">final List&lt;E&gt; list;</div><div class="line"></div><div class="line">SynchronizedList(List&lt;E&gt; list) &#123;</div><div class="line">    super(list);</div><div class="line">    this.list = list;</div><div class="line">&#125;</div><div class="line">SynchronizedList(List&lt;E&gt; list, Object mutex) &#123;</div><div class="line">    super(list, mutex);</div><div class="line">    this.list = list;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="https://stackoverflow.com/questions/322715/when-to-use-linkedlist-over-arraylist" target="_blank" rel="external">When to use LinkedList over ArrayList?</a></p>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

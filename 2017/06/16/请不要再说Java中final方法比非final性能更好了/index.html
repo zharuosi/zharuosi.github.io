@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>请不要再说Java中final方法比非final性能更好了 | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="java,performance,final," />
+  
+
+  <meta name="description" content="无继承有 static 修饰static final123456789101112131415161718// 生成随机数字和字母,public static final String getStringRandomFinal(int length) &amp;#123;    String val = &quot;&quot;;    Random random = new Random();    // 参数length">
+<meta name="keywords" content="java,performance,final">
+<meta property="og:type" content="article">
+<meta property="og:title" content="请不要再说Java中final方法比非final性能更好了">
+<meta property="og:url" content="https://emacsist.github.io/2017/06/16/请不要再说Java中final方法比非final性能更好了/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="无继承有 static 修饰static final123456789101112131415161718// 生成随机数字和字母,public static final String getStringRandomFinal(int length) &amp;#123;    String val = &quot;&quot;;    Random random = new Random();    // 参数length">
+<meta property="og:updated_time" content="2017-06-16T08:02:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="请不要再说Java中final方法比非final性能更好了">
+<meta name="twitter:description" content="无继承有 static 修饰static final123456789101112131415161718// 生成随机数字和字母,public static final String getStringRandomFinal(int length) &amp;#123;    String val = &quot;&quot;;    Random random = new Random();    // 参数length">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#无继承"><span class="toc-text">无继承</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#有-static-修饰"><span class="toc-text">有 static 修饰</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#static-final"><span class="toc-text">static final</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#static-非-final"><span class="toc-text">static 非 final</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结果"><span class="toc-text">结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-text">分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字节码级别的差别"><span class="toc-text">字节码级别的差别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在调用者上面的字节码差别"><span class="toc-text">在调用者上面的字节码差别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#无-static-修饰"><span class="toc-text">无 static 修饰</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#结果-1"><span class="toc-text">结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析-1"><span class="toc-text">分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字节码级别的差别-1"><span class="toc-text">字节码级别的差别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在调用者上面的字节码差别-1"><span class="toc-text">在调用者上面的字节码差别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#有继承"><span class="toc-text">有继承</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#无-final-修饰"><span class="toc-text">无 final 修饰</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有-final-修饰"><span class="toc-text">有 final 修饰</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试代码"><span class="toc-text">测试代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试结果"><span class="toc-text">测试结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#它们字节码的区别"><span class="toc-text">它们字节码的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结-1"><span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结-2"><span class="toc-text">总结</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-请不要再说Java中final方法比非final性能更好了" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            请不要再说Java中final方法比非final性能更好了
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.06.16</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#final">
+        <span class="tag-name">final</span>
+    <span class="tag-size">( 1 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#java">
+        <span class="tag-name">java</span>
+    <span class="tag-size">( 116 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#performance">
+        <span class="tag-name">performance</span>
+    <span class="tag-size">( 4 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <h1 id="无继承"><a href="#无继承" class="headerlink" title="无继承"></a>无继承</h1><h2 id="有-static-修饰"><a href="#有-static-修饰" class="headerlink" title="有 static 修饰"></a>有 static 修饰</h2><h3 id="static-final"><a href="#static-final" class="headerlink" title="static final"></a>static final</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">// 生成随机数字和字母,</div><div class="line">public static final String getStringRandomFinal(int length) &#123;</div><div class="line">    String val = <span class="string">""</span>;</div><div class="line">    Random random = new Random();</div><div class="line">    // 参数length，表示生成几位随机数</div><div class="line">    <span class="keyword">for</span> (int i = 0; i &lt; length; i++) &#123;</div><div class="line">        String charOrNum = random.nextInt(2) % 2 == 0 ? <span class="string">"char"</span> : <span class="string">"num"</span>;</div><div class="line">        // 输出字母还是数字</div><div class="line">        <span class="keyword">if</span> (<span class="string">"char"</span>.equalsIgnoreCase(charOrNum)) &#123;</div><div class="line">            // 输出是大写字母还是小写字母</div><div class="line">            // int temp = random.nextInt(2) % 2 == 0 ? 65 : 97;</div><div class="line">            val += (char) (random.nextInt(26) + 97);</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"num"</span>.equalsIgnoreCase(charOrNum)) &#123;</div><div class="line">            val += String.valueOf(random.nextInt(10));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">return</span> val;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="static-非-final"><a href="#static-非-final" class="headerlink" title="static 非 final"></a>static 非 final</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">// 生成随机数字和字母,</div><div class="line">public static String getStringRandom(int length) &#123;</div><div class="line">    String val = <span class="string">""</span>;</div><div class="line">    Random random = new Random();</div><div class="line">    // 参数length，表示生成几位随机数</div><div class="line">    <span class="keyword">for</span> (int i = 0; i &lt; length; i++) &#123;</div><div class="line">        String charOrNum = random.nextInt(2) % 2 == 0 ? <span class="string">"char"</span> : <span class="string">"num"</span>;</div><div class="line">        // 输出字母还是数字</div><div class="line">        <span class="keyword">if</span> (<span class="string">"char"</span>.equalsIgnoreCase(charOrNum)) &#123;</div><div class="line">            // 输出是大写字母还是小写字母</div><div class="line">            // int temp = random.nextInt(2) % 2 == 0 ? 65 : 97;</div><div class="line">            val += (char) (random.nextInt(26) + 97);</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"num"</span>.equalsIgnoreCase(charOrNum)) &#123;</div><div class="line">            val += String.valueOf(random.nextInt(10));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">return</span> val;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><p>这里使用了 OpenJDK 的 JMH 基准测试工具来测试的，结果如下:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># JMH 1.4.1 (released 903 days ago, please consider updating!)</span></div><div class="line"><span class="comment"># VM invoker: /srv/jdk1.8.0_92/jre/bin/java</span></div><div class="line"><span class="comment"># VM options: &lt;none&gt;</span></div><div class="line"><span class="comment"># Warmup: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Measurement: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Timeout: 10 min per iteration</span></div><div class="line"><span class="comment"># Threads: 1 thread, will synchronize iterations</span></div><div class="line"><span class="comment"># Benchmark mode: Throughput, ops/time</span></div><div class="line"><span class="comment"># Benchmark: org.agoncal.sample.jmh.Main.benchmark</span></div><div class="line"></div><div class="line">中间忽略了预热及测试过程，这里只显示结果</div><div class="line"></div><div class="line">Result: 206924.113 ±(99.9%) 7746.446 ops/s [Average]</div><div class="line">  Statistics: (min, avg, max) = (132107.466, 206924.113, 267265.397), stdev = 32798.937</div><div class="line">  Confidence interval (99.9%): [199177.667, 214670.559]</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># JMH 1.4.1 (released 903 days ago, please consider updating!)</span></div><div class="line"><span class="comment"># VM invoker: /srv/jdk1.8.0_92/jre/bin/java</span></div><div class="line"><span class="comment"># VM options: &lt;none&gt;</span></div><div class="line"><span class="comment"># Warmup: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Measurement: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Timeout: 10 min per iteration</span></div><div class="line"><span class="comment"># Threads: 1 thread, will synchronize iterations</span></div><div class="line"><span class="comment"># Benchmark mode: Throughput, ops/time</span></div><div class="line"><span class="comment"># Benchmark: org.agoncal.sample.jmh.Main.benchmarkFinal</span></div><div class="line"></div><div class="line">中间忽略了预热及测试过程，这里只显示结果</div><div class="line"></div><div class="line">Result: 210111.568 ±(99.9%) 8486.176 ops/s [Average]</div><div class="line">  Statistics: (min, avg, max) = (133813.368, 210111.568, 267525.228), stdev = 35931.001</div><div class="line">  Confidence interval (99.9%): [201625.392, 218597.744]</div><div class="line">  </div><div class="line">  </div><div class="line"><span class="comment"># Run complete. Total time: 00:13:54</span></div><div class="line"></div><div class="line">Benchmark                       Mode  Samples       Score      Error  Units</div><div class="line">o.a.s.j.Main.benchmark         thrpt      200  206924.113 ± 7746.446  ops/s</div><div class="line">o.a.s.j.Main.benchmarkFinal    thrpt      200  210111.568 ± 8486.176  ops/s</div></pre></td></tr></table></figure>
+<p>总结：你说final的性能比非final有没有提升呢？可以说有，但几乎可以忽略不计。如果单纯地追求性能，而将所有的方法修改为 final 的话，我认为这样子是不可取的。而且这性能的差别，远远也没有网上有些人说的提升 50% 这么恐怖（有可能他们使用的是10年前的JVM来测试的吧^_^，比如 《35+ 个 Java 代码性能优化总结》这篇文章。雷总：不服？咱们来跑个分！）</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><h3 id="字节码级别的差别"><a href="#字节码级别的差别" class="headerlink" title="字节码级别的差别"></a>字节码级别的差别</h3><p>StringKit.java<br>StringKitFinal.java</p>
+<p>它们在字节码上的差别:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">[18:52:08] emacsist:target $ diff /tmp/stringkit.log /tmp/stringkit-final.log</div><div class="line">1,5c1,5</div><div class="line">&lt; Classfile /Users/emacsist/Documents/idea/logging/target/classes/org/agoncal/sample/jmh/StringKit.class</div><div class="line">&lt;   Last modified 2017-6-15; size 1098 bytes</div><div class="line">&lt;   MD5 checksum fe1ccdde26107e4037afc54c780f2c95</div><div class="line">&lt;   Compiled from <span class="string">"StringKit.java"</span></div><div class="line">&lt; public class org.agoncal.sample.jmh.StringKit</div><div class="line">---</div><div class="line">&gt; Classfile /Users/emacsist/Documents/idea/logging/target/classes/org/agoncal/sample/jmh/StringKitFinal.class</div><div class="line">&gt;   Last modified 2017-6-15; size 1118 bytes</div><div class="line">&gt;   MD5 checksum 410f8bf0eb723b794e4754c6eb8b9829</div><div class="line">&gt;   Compiled from <span class="string">"StringKitFinal.java"</span></div><div class="line">&gt; public class org.agoncal.sample.jmh.StringKitFinal</div><div class="line">24c24</div><div class="line">&lt;   <span class="comment">#15 = Class              #52            // org/agoncal/sample/jmh/StringKit</span></div><div class="line">---</div><div class="line">&gt;   <span class="comment">#15 = Class              #52            // org/agoncal/sample/jmh/StringKitFinal</span></div><div class="line">32,33c32,33</div><div class="line">&lt;   <span class="comment">#23 = Utf8               Lorg/agoncal/sample/jmh/StringKit;</span></div><div class="line">&lt;   <span class="comment">#24 = Utf8               getStringRandom</span></div><div class="line">---</div><div class="line">&gt;   <span class="comment">#23 = Utf8               Lorg/agoncal/sample/jmh/StringKitFinal;</span></div><div class="line">&gt;   <span class="comment">#24 = Utf8               getStringRandomFinal</span></div><div class="line">47c47</div><div class="line">&lt;   <span class="comment">#38 = Utf8               StringKit.java</span></div><div class="line">---</div><div class="line">&gt;   <span class="comment">#38 = Utf8               StringKitFinal.java</span></div><div class="line">61c61</div><div class="line">&lt;   <span class="comment">#52 = Utf8               org/agoncal/sample/jmh/StringKit</span></div><div class="line">---</div><div class="line">&gt;   <span class="comment">#52 = Utf8               org/agoncal/sample/jmh/StringKitFinal</span></div><div class="line">75c75</div><div class="line">&lt;   public org.agoncal.sample.jmh.StringKit();</div><div class="line">---</div><div class="line">&gt;   public org.agoncal.sample.jmh.StringKitFinal();</div><div class="line">87c87</div><div class="line">&lt;             0       5     0  this   Lorg/agoncal/sample/jmh/StringKit;</div><div class="line">---</div><div class="line">&gt;             0       5     0  this   Lorg/agoncal/sample/jmh/StringKitFinal;</div><div class="line">89c89</div><div class="line">&lt;   public static java.lang.String getStringRandom(int);</div><div class="line">---</div><div class="line">&gt;   public static final java.lang.String getStringRandomFinal(int);</div><div class="line">91c91</div><div class="line">&lt;     flags: ACC_PUBLIC, ACC_STATIC</div><div class="line">---</div><div class="line">&gt;     flags: ACC_PUBLIC, ACC_STATIC, ACC_FINAL</div><div class="line">187c187</div><div class="line">&lt; SourceFile: <span class="string">"StringKit.java"</span></div><div class="line">---</div><div class="line">&gt; SourceFile: <span class="string">"StringKitFinal.java"</span></div></pre></td></tr></table></figure>
+<p>可以看到除了方法名和方法修饰符不同之外，其他的没有什么区别了。</p>
+<h3 id="在调用者上面的字节码差别"><a href="#在调用者上面的字节码差别" class="headerlink" title="在调用者上面的字节码差别"></a>在调用者上面的字节码差别</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">public void benchmark();</div><div class="line">  descriptor: ()V</div><div class="line">  flags: ACC_PUBLIC</div><div class="line">  Code:</div><div class="line">    stack=1, locals=1, args_size=1</div><div class="line">       0: bipush        32</div><div class="line">       2: invokestatic  <span class="comment">#2                  // Method org/agoncal/sample/jmh/StringKit.getStringRandom:(I)Ljava/lang/String;</span></div><div class="line">       5: pop</div><div class="line">       6: <span class="built_in">return</span></div><div class="line">    LineNumberTable:</div><div class="line">      line 21: 0</div><div class="line">      line 22: 6</div><div class="line">    LocalVariableTable:</div><div class="line">      Start  Length  Slot  Name   Signature</div><div class="line">          0       7     0  this   Lorg/agoncal/sample/jmh/Main;</div><div class="line">  RuntimeVisibleAnnotations:</div><div class="line">    0: <span class="comment">#26()</span></div><div class="line"></div><div class="line">public void benchmarkFinal();</div><div class="line">  descriptor: ()V</div><div class="line">  flags: ACC_PUBLIC</div><div class="line">  Code:</div><div class="line">    stack=1, locals=1, args_size=1</div><div class="line">       0: bipush        32</div><div class="line">       2: invokestatic  <span class="comment">#3                  // Method org/agoncal/sample/jmh/StringKitFinal.getStringRandomFinal:(I)Ljava/lang/String;</span></div><div class="line">       5: pop</div><div class="line">       6: <span class="built_in">return</span></div><div class="line">    LineNumberTable:</div><div class="line">      line 26: 0</div><div class="line">      line 27: 6</div><div class="line">    LocalVariableTable:</div><div class="line">      Start  Length  Slot  Name   Signature</div><div class="line">          0       7     0  this   Lorg/agoncal/sample/jmh/Main;</div><div class="line">  RuntimeVisibleAnnotations:</div><div class="line">    0: <span class="comment">#26()</span></div></pre></td></tr></table></figure>
+<p>可以看到，它们在调用者上面的字节码也没有什么区别，只是方法名不一样之外。</p>
+<p>对于 JVM 来说，它是只认字节码的，既然字节码除了方法名和修饰符一样，其他都一样，那就可以大概推测它们的性能几乎可以忽略不计了。因为调用 static final 和 static 非 final 的JVM指令是一样。</p>
+<h2 id="无-static-修饰"><a href="#无-static-修饰" class="headerlink" title="无 static 修饰"></a>无 static 修饰</h2><p>方法体是一样的，只是将它们删除了 static 的修饰。</p>
+<h3 id="结果-1"><a href="#结果-1" class="headerlink" title="结果"></a>结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># JMH version: 1.19</span></div><div class="line"><span class="comment"># VM version: JDK 1.8.0_92, VM 25.92-b14</span></div><div class="line"><span class="comment"># VM invoker: /srv/jdk1.8.0_92/jre/bin/java</span></div><div class="line"><span class="comment"># VM options: &lt;none&gt;</span></div><div class="line"><span class="comment"># Warmup: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Measurement: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Timeout: 10 min per iteration</span></div><div class="line"><span class="comment"># Threads: 1 thread, will synchronize iterations</span></div><div class="line"><span class="comment"># Benchmark mode: Throughput, ops/time</span></div><div class="line"><span class="comment"># Benchmark: org.agoncal.sample.jmh.Main.benchmark</span></div><div class="line">中间忽略了预热及测试过程，这里只显示结果</div><div class="line">Result <span class="string">"org.agoncal.sample.jmh.Main.benchmark"</span>:</div><div class="line">  201306.770 ±(99.9%) 8184.423 ops/s [Average]</div><div class="line">  (min, avg, max) = (131889.934, 201306.770, 259928.172), stdev = 34653.361</div><div class="line">  CI (99.9%): [193122.347, 209491.193] (assumes normal distribution)</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># JMH version: 1.19</span></div><div class="line"><span class="comment"># VM version: JDK 1.8.0_92, VM 25.92-b14</span></div><div class="line"><span class="comment"># VM invoker: /srv/jdk1.8.0_92/jre/bin/java</span></div><div class="line"><span class="comment"># VM options: &lt;none&gt;</span></div><div class="line"><span class="comment"># Warmup: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Measurement: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Timeout: 10 min per iteration</span></div><div class="line"><span class="comment"># Threads: 1 thread, will synchronize iterations</span></div><div class="line"><span class="comment"># Benchmark mode: Throughput, ops/time</span></div><div class="line"><span class="comment"># Benchmark: org.agoncal.sample.jmh.Main.benchmarkFinal</span></div><div class="line">中间忽略了预热及测试过程，这里只显示结果</div><div class="line">Result <span class="string">"org.agoncal.sample.jmh.Main.benchmarkFinal"</span>:</div><div class="line">  196871.022 ±(99.9%) 8595.719 ops/s [Average]</div><div class="line">  (min, avg, max) = (131182.268, 196871.022, 265522.769), stdev = 36394.814</div><div class="line">  CI (99.9%): [188275.302, 205466.741] (assumes normal distribution)</div><div class="line">  </div><div class="line"></div><div class="line"><span class="comment"># Run complete. Total time: 00:13:35</span></div><div class="line"></div><div class="line">Benchmark             Mode  Cnt       Score      Error  Units</div><div class="line">Main.benchmark       thrpt  200  201306.770 ± 8184.423  ops/s</div><div class="line">Main.benchmarkFinal  thrpt  200  196871.022 ± 8595.719  ops/s</div></pre></td></tr></table></figure>
+<h3 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h3><h3 id="字节码级别的差别-1"><a href="#字节码级别的差别-1" class="headerlink" title="字节码级别的差别"></a>字节码级别的差别</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">[19:20:17] emacsist:target $ diff /tmp/stringkit.log /tmp/stringkit-final.log</div><div class="line">1,5c1,5</div><div class="line">&lt; Classfile /Users/emacsist/Documents/idea/logging/target/classes/org/agoncal/sample/jmh/StringKit.class</div><div class="line">&lt;   Last modified 2017-6-15; size 1110 bytes</div><div class="line">&lt;   MD5 checksum f61144e86f7c17dc5d5f2b2d35fac36d</div><div class="line">&lt;   Compiled from <span class="string">"StringKit.java"</span></div><div class="line">&lt; public class org.agoncal.sample.jmh.StringKit</div><div class="line">---</div><div class="line">&gt; Classfile /Users/emacsist/Documents/idea/logging/target/classes/org/agoncal/sample/jmh/StringKitFinal.class</div><div class="line">&gt;   Last modified 2017-6-15; size 1130 bytes</div><div class="line">&gt;   MD5 checksum 15ce17ee17fdb5f4721f0921977b1e69</div><div class="line">&gt;   Compiled from <span class="string">"StringKitFinal.java"</span></div><div class="line">&gt; public class org.agoncal.sample.jmh.StringKitFinal</div><div class="line">24c24</div><div class="line">&lt;   <span class="comment">#15 = Class              #52            // org/agoncal/sample/jmh/StringKit</span></div><div class="line">---</div><div class="line">&gt;   <span class="comment">#15 = Class              #52            // org/agoncal/sample/jmh/StringKitFinal</span></div><div class="line">32,33c32,33</div><div class="line">&lt;   <span class="comment">#23 = Utf8               Lorg/agoncal/sample/jmh/StringKit;</span></div><div class="line">&lt;   <span class="comment">#24 = Utf8               getStringRandom</span></div><div class="line">---</div><div class="line">&gt;   <span class="comment">#23 = Utf8               Lorg/agoncal/sample/jmh/StringKitFinal;</span></div><div class="line">&gt;   <span class="comment">#24 = Utf8               getStringRandomFinal</span></div><div class="line">47c47</div><div class="line">&lt;   <span class="comment">#38 = Utf8               StringKit.java</span></div><div class="line">---</div><div class="line">&gt;   <span class="comment">#38 = Utf8               StringKitFinal.java</span></div><div class="line">61c61</div><div class="line">&lt;   <span class="comment">#52 = Utf8               org/agoncal/sample/jmh/StringKit</span></div><div class="line">---</div><div class="line">&gt;   <span class="comment">#52 = Utf8               org/agoncal/sample/jmh/StringKitFinal</span></div><div class="line">75c75</div><div class="line">&lt;   public org.agoncal.sample.jmh.StringKit();</div><div class="line">---</div><div class="line">&gt;   public org.agoncal.sample.jmh.StringKitFinal();</div><div class="line">87c87</div><div class="line">&lt;             0       5     0  this   Lorg/agoncal/sample/jmh/StringKit;</div><div class="line">---</div><div class="line">&gt;             0       5     0  this   Lorg/agoncal/sample/jmh/StringKitFinal;</div><div class="line">89c89</div><div class="line">&lt;   public java.lang.String getStringRandom(int);</div><div class="line">---</div><div class="line">&gt;   public final java.lang.String getStringRandomFinal(int);</div><div class="line">91c91</div><div class="line">&lt;     flags: ACC_PUBLIC</div><div class="line">---</div><div class="line">&gt;     flags: ACC_PUBLIC, ACC_FINAL</div><div class="line">169c169</div><div class="line">&lt;             0     125     0  this   Lorg/agoncal/sample/jmh/StringKit;</div><div class="line">---</div><div class="line">&gt;             0     125     0  this   Lorg/agoncal/sample/jmh/StringKitFinal;</div><div class="line">188c188</div><div class="line">&lt; SourceFile: <span class="string">"StringKit.java"</span></div><div class="line">---</div><div class="line">&gt; SourceFile: <span class="string">"StringKitFinal.java"</span></div></pre></td></tr></table></figure>
+<p>可以看到，字节码上除了名字和 final 修饰符差别外，其余的是一样的。</p>
+<h3 id="在调用者上面的字节码差别-1"><a href="#在调用者上面的字节码差别-1" class="headerlink" title="在调用者上面的字节码差别"></a>在调用者上面的字节码差别</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">public void benchmark();</div><div class="line">  descriptor: ()V</div><div class="line">  flags: ACC_PUBLIC</div><div class="line">  Code:</div><div class="line">    stack=2, locals=1, args_size=1</div><div class="line">       0: new           <span class="comment">#2                  // class org/agoncal/sample/jmh/StringKit</span></div><div class="line">       3: dup</div><div class="line">       4: invokespecial <span class="comment">#3                  // Method org/agoncal/sample/jmh/StringKit."&lt;init&gt;":()V</span></div><div class="line">       7: bipush        32</div><div class="line">       9: invokevirtual <span class="comment">#4                  // Method org/agoncal/sample/jmh/StringKit.getStringRandom:(I)Ljava/lang/String;</span></div><div class="line">      12: pop</div><div class="line">      13: <span class="built_in">return</span></div><div class="line">    LineNumberTable:</div><div class="line">      line 21: 0</div><div class="line">      line 22: 13</div><div class="line">    LocalVariableTable:</div><div class="line">      Start  Length  Slot  Name   Signature</div><div class="line">          0      14     0  this   Lorg/agoncal/sample/jmh/Main;</div><div class="line">  RuntimeVisibleAnnotations:</div><div class="line">    0: <span class="comment">#30()</span></div><div class="line"></div><div class="line">public void benchmarkFinal();</div><div class="line">  descriptor: ()V</div><div class="line">  flags: ACC_PUBLIC</div><div class="line">  Code:</div><div class="line">    stack=2, locals=1, args_size=1</div><div class="line">       0: new           <span class="comment">#5                  // class org/agoncal/sample/jmh/StringKitFinal</span></div><div class="line">       3: dup</div><div class="line">       4: invokespecial <span class="comment">#6                  // Method org/agoncal/sample/jmh/StringKitFinal."&lt;init&gt;":()V</span></div><div class="line">       7: bipush        32</div><div class="line">       9: invokevirtual <span class="comment">#7                  // Method org/agoncal/sample/jmh/StringKitFinal.getStringRandomFinal:(I)Ljava/lang/String;</span></div><div class="line">      12: pop</div><div class="line">      13: <span class="built_in">return</span></div><div class="line">    LineNumberTable:</div><div class="line">      line 26: 0</div><div class="line">      line 27: 13</div><div class="line">    LocalVariableTable:</div><div class="line">      Start  Length  Slot  Name   Signature</div><div class="line">          0      14     0  this   Lorg/agoncal/sample/jmh/Main;</div><div class="line">  RuntimeVisibleAnnotations:</div><div class="line">    0: <span class="comment">#30()</span></div></pre></td></tr></table></figure>
+<p>可以看到，它们除了名字不同之外，其他的JVM指令都是一样的。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>对于是否有 final 修饰的方法，对性能的影响可以忽略不计。因为它们生成的字节码除了 flags 标志位是否有 final 修饰不同之外，其他所有的JVM指令，都是一样的（对于方法本身，以及调用者本身的字节码都一样）。对于JVM来说，它执行的就是字节码，如果字节码都一样的话，那对于JVM来说，它就是同一样东西的了。</p>
+<h1 id="有继承"><a href="#有继承" class="headerlink" title="有继承"></a>有继承</h1><h2 id="无-final-修饰"><a href="#无-final-修饰" class="headerlink" title="无 final 修饰"></a>无 final 修饰</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">package org.agoncal.sample.jmh;</div><div class="line"></div><div class="line">import java.util.Random;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Created by emacsist on 2017/6/15.</div><div class="line"> */</div><div class="line">public abstract class StringKitAbs &#123;</div><div class="line">    // 生成随机数字和字母,</div><div class="line">    public String getStringRandom(int length) &#123;</div><div class="line">        String val = <span class="string">""</span>;</div><div class="line">        Random random = new Random();</div><div class="line">        // 参数length，表示生成几位随机数</div><div class="line">        <span class="keyword">for</span> (int i = 0; i &lt; length; i++) &#123;</div><div class="line">            String charOrNum = random.nextInt(2) % 2 == 0 ? <span class="string">"char"</span> : <span class="string">"num"</span>;</div><div class="line">            // 输出字母还是数字</div><div class="line">            <span class="keyword">if</span> (<span class="string">"char"</span>.equalsIgnoreCase(charOrNum)) &#123;</div><div class="line">                // 输出是大写字母还是小写字母</div><div class="line">                // int temp = random.nextInt(2) % 2 == 0 ? 65 : 97;</div><div class="line">                val += (char) (random.nextInt(26) + 97);</div><div class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"num"</span>.equalsIgnoreCase(charOrNum)) &#123;</div><div class="line">                val += String.valueOf(random.nextInt(10));</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="built_in">return</span> val;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="有-final-修饰"><a href="#有-final-修饰" class="headerlink" title="有 final 修饰"></a>有 final 修饰</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">package org.agoncal.sample.jmh;</div><div class="line"></div><div class="line">import java.util.Random;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Created by emacsist on 2017/6/15.</div><div class="line"> */</div><div class="line">public abstract class StringKitAbsFinal &#123;</div><div class="line">    // 生成随机数字和字母,</div><div class="line">    public final String getStringRandomFinal(int length) &#123;</div><div class="line">        String val = <span class="string">""</span>;</div><div class="line">        Random random = new Random();</div><div class="line">        // 参数length，表示生成几位随机数</div><div class="line">        <span class="keyword">for</span> (int i = 0; i &lt; length; i++) &#123;</div><div class="line">            String charOrNum = random.nextInt(2) % 2 == 0 ? <span class="string">"char"</span> : <span class="string">"num"</span>;</div><div class="line">            // 输出字母还是数字</div><div class="line">            <span class="keyword">if</span> (<span class="string">"char"</span>.equalsIgnoreCase(charOrNum)) &#123;</div><div class="line">                // 输出是大写字母还是小写字母</div><div class="line">                // int temp = random.nextInt(2) % 2 == 0 ? 65 : 97;</div><div class="line">                val += (char) (random.nextInt(26) + 97);</div><div class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"num"</span>.equalsIgnoreCase(charOrNum)) &#123;</div><div class="line">                val += String.valueOf(random.nextInt(10));</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="built_in">return</span> val;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h2><p>写一个类来继承上面的抽象类，以此来测试在继承中 final 有否对多态中的影响</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">package org.agoncal.sample.jmh;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Created by emacsist on 2017/6/15.</div><div class="line"> */</div><div class="line">public class StringKitFinal extends StringKitAbsFinal &#123;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">package org.agoncal.sample.jmh;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Created by emacsist on 2017/6/15.</div><div class="line"> */</div><div class="line">public class StringKit extends StringKitAbs &#123;</div><div class="line"></div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后在基准测试中:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@Benchmark</div><div class="line">public void <span class="function"><span class="title">benchmark</span></span>() &#123;</div><div class="line">    new StringKit().getStringRandom(32);</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Benchmark</div><div class="line">public void <span class="function"><span class="title">benchmarkFinal</span></span>() &#123;</div><div class="line">    new StringKitFinal().getStringRandomFinal(32);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><p>非 final 结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># JMH version: 1.19</span></div><div class="line"><span class="comment"># VM version: JDK 1.8.0_92, VM 25.92-b14</span></div><div class="line"><span class="comment"># VM invoker: /srv/jdk1.8.0_92/jre/bin/java</span></div><div class="line"><span class="comment"># VM options: &lt;none&gt;</span></div><div class="line"><span class="comment"># Warmup: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Measurement: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Timeout: 10 min per iteration</span></div><div class="line"><span class="comment"># Threads: 1 thread, will synchronize iterations</span></div><div class="line"><span class="comment"># Benchmark mode: Throughput, ops/time</span></div><div class="line"><span class="comment"># Benchmark: org.agoncal.sample.jmh.Main.benchmark</span></div><div class="line"></div><div class="line">中间忽略了预热及测试过程</div><div class="line"></div><div class="line">Result <span class="string">"org.agoncal.sample.jmh.Main.benchmark"</span>:</div><div class="line">  213462.677 ±(99.9%) 8670.164 ops/s [Average]</div><div class="line">  (min, avg, max) = (135751.428, 213462.677, 264182.887), stdev = 36710.017</div><div class="line">  CI (99.9%): [204792.513, 222132.841] (assumes normal distribution)</div></pre></td></tr></table></figure>
+<p>有 final 结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># JMH version: 1.19</span></div><div class="line"><span class="comment"># VM version: JDK 1.8.0_92, VM 25.92-b14</span></div><div class="line"><span class="comment"># VM invoker: /srv/jdk1.8.0_92/jre/bin/java</span></div><div class="line"><span class="comment"># VM options: &lt;none&gt;</span></div><div class="line"><span class="comment"># Warmup: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Measurement: 20 iterations, 1 s each</span></div><div class="line"><span class="comment"># Timeout: 10 min per iteration</span></div><div class="line"><span class="comment"># Threads: 1 thread, will synchronize iterations</span></div><div class="line"><span class="comment"># Benchmark mode: Throughput, ops/time</span></div><div class="line"><span class="comment"># Benchmark: org.agoncal.sample.jmh.Main.benchmarkFinal</span></div><div class="line"></div><div class="line">中间忽略了预热及测试过程</div><div class="line"></div><div class="line">Result <span class="string">"org.agoncal.sample.jmh.Main.benchmarkFinal"</span>:</div><div class="line">  213684.585 ±(99.9%) 8571.512 ops/s [Average]</div><div class="line">  (min, avg, max) = (133472.162, 213684.585, 267742.236), stdev = 36292.318</div><div class="line">  CI (99.9%): [205113.073, 222256.097] (assumes normal distribution)</div></pre></td></tr></table></figure>
+<p>总对比</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Run complete. Total time: 00:13:35</span></div><div class="line"></div><div class="line">Benchmark             Mode  Cnt       Score      Error  Units</div><div class="line">Main.benchmark       thrpt  200  213462.677 ± 8670.164  ops/s</div><div class="line">Main.benchmarkFinal  thrpt  200  213684.585 ± 8571.512  ops/s</div></pre></td></tr></table></figure>
+<h2 id="它们字节码的区别"><a href="#它们字节码的区别" class="headerlink" title="它们字节码的区别"></a>它们字节码的区别</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line">[12:12:19] emacsist:classes $ diff /tmp/StringKit.log /tmp/StringKitFinal.log</div><div class="line">1,5c1,5</div><div class="line">&lt; Classfile /Users/emacsist/Documents/idea/logging/target/classes/org/agoncal/sample/jmh/StringKit.class</div><div class="line">&lt;   Last modified 2017-6-16; size 317 bytes</div><div class="line">&lt;   MD5 checksum 7f9b024adc7f39345215e3e8490cafe4</div><div class="line">&lt;   Compiled from <span class="string">"StringKit.java"</span></div><div class="line">&lt; public class org.agoncal.sample.jmh.StringKit extends org.agoncal.sample.jmh.StringKitAbs</div><div class="line">---</div><div class="line">&gt; Classfile /Users/emacsist/Documents/idea/logging/target/classes/org/agoncal/sample/jmh/StringKitFinal.class</div><div class="line">&gt;   Last modified 2017-6-16; size 337 bytes</div><div class="line">&gt;   MD5 checksum f54eadc79a90675d97e95f766ef88a87</div><div class="line">&gt;   Compiled from <span class="string">"StringKitFinal.java"</span></div><div class="line">&gt; public class org.agoncal.sample.jmh.StringKitFinal extends org.agoncal.sample.jmh.StringKitAbsFinal</div><div class="line">10,12c10,12</div><div class="line">&lt;    <span class="comment">#1 = Methodref          #3.#13         // org/agoncal/sample/jmh/StringKitAbs."&lt;init&gt;":()V</span></div><div class="line">&lt;    <span class="comment">#2 = Class              #14            // org/agoncal/sample/jmh/StringKit</span></div><div class="line">&lt;    <span class="comment">#3 = Class              #15            // org/agoncal/sample/jmh/StringKitAbs</span></div><div class="line">---</div><div class="line">&gt;    <span class="comment">#1 = Methodref          #3.#13         // org/agoncal/sample/jmh/StringKitAbsFinal."&lt;init&gt;":()V</span></div><div class="line">&gt;    <span class="comment">#2 = Class              #14            // org/agoncal/sample/jmh/StringKitFinal</span></div><div class="line">&gt;    <span class="comment">#3 = Class              #15            // org/agoncal/sample/jmh/StringKitAbsFinal</span></div><div class="line">19c19</div><div class="line">&lt;   <span class="comment">#10 = Utf8               Lorg/agoncal/sample/jmh/StringKit;</span></div><div class="line">---</div><div class="line">&gt;   <span class="comment">#10 = Utf8               Lorg/agoncal/sample/jmh/StringKitFinal;</span></div><div class="line">21c21</div><div class="line">&lt;   <span class="comment">#12 = Utf8               StringKit.java</span></div><div class="line">---</div><div class="line">&gt;   <span class="comment">#12 = Utf8               StringKitFinal.java</span></div><div class="line">23,24c23,24</div><div class="line">&lt;   <span class="comment">#14 = Utf8               org/agoncal/sample/jmh/StringKit</span></div><div class="line">&lt;   <span class="comment">#15 = Utf8               org/agoncal/sample/jmh/StringKitAbs</span></div><div class="line">---</div><div class="line">&gt;   <span class="comment">#14 = Utf8               org/agoncal/sample/jmh/StringKitFinal</span></div><div class="line">&gt;   <span class="comment">#15 = Utf8               org/agoncal/sample/jmh/StringKitAbsFinal</span></div><div class="line">26c26</div><div class="line">&lt;   public org.agoncal.sample.jmh.StringKit();</div><div class="line">---</div><div class="line">&gt;   public org.agoncal.sample.jmh.StringKitFinal();</div><div class="line">32c32</div><div class="line">&lt;          1: invokespecial <span class="comment">#1                  // Method org/agoncal/sample/jmh/StringKitAbs."&lt;init&gt;":()V</span></div><div class="line">---</div><div class="line">&gt;          1: invokespecial <span class="comment">#1                  // Method org/agoncal/sample/jmh/StringKitAbsFinal."&lt;init&gt;":()V</span></div><div class="line">38c38</div><div class="line">&lt;             0       5     0  this   Lorg/agoncal/sample/jmh/StringKit;</div><div class="line">---</div><div class="line">&gt;             0       5     0  this   Lorg/agoncal/sample/jmh/StringKitFinal;</div><div class="line">40c40</div><div class="line">&lt; SourceFile: <span class="string">"StringKit.java"</span></div><div class="line">---</div><div class="line">&gt; SourceFile: <span class="string">"StringKitFinal.java"</span></div></pre></td></tr></table></figure>
+<p>可以看到，除了它们的方法签名和方法名字不同之外其他的都是一样的，包括JVM调用指令也完全是一样的。</p>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>可以看到它们几乎是一样的。</p>
+<h1 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h1><p>基于上面的基准测试结论，我认为滥用或刻意为了所谓的提升性能，而去为每一个方法尽可能添加 final 的关键字是不可取的。使用 final ，更多的应该是根据Java对 final 的语义来定义，而不是只想着为了提升性能（而且这影响可以忽略不计）而刻意用 final.</p>
+<p>使用 final 的情况:</p>
+<p>final 变量: 表示只读（只初始化一次，但可多次读取）<br>final 方法：表示子类不可以重写。（网上认为 final 比非 final 快，就是认为它是在编译的时候已经静态绑定了，不需要在运行时再动态绑定。这个可能以前的JVM上是正确的，但在现代的JVM上，这个可以认为没什么影响，至少我在基准测试里是这样子）<br>final 类： 它们不能被继承，而且final类的方法，默认也是 final 的。</p>
+<p>关于这个 final 的性能问题，我也Google了下，发现 stackoverflow 上，也有类似的问题：</p>
+<ul>
+<li>参考资料</li>
+</ul>
+<p><a href="https://stackoverflow.com/questions/4279420/does-use-of-final-keyword-in-java-improve-the-performance" target="_blank" rel="external">stackoverflow</a></p>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

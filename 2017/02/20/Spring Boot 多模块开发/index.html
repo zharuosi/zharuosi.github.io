@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spring Boot 多模块开发 | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="java,spring,spring-boot," />
+  
+
+  <meta name="description" content="本文假设项目名为 wxsdk，它有如下模块 123456789wxsdk├── bean├── constant├── dao├── listener├── service├── utils├── webapp├── wx-plugin wxsdk 根目录下的 pom 文件如下1234567891011121314151617181920212223242526272829303132333435">
+<meta name="keywords" content="java,spring,spring-boot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Boot 多模块开发">
+<meta property="og:url" content="https://emacsist.github.io/2017/02/20/Spring Boot 多模块开发/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="本文假设项目名为 wxsdk，它有如下模块 123456789wxsdk├── bean├── constant├── dao├── listener├── service├── utils├── webapp├── wx-plugin wxsdk 根目录下的 pom 文件如下1234567891011121314151617181920212223242526272829303132333435">
+<meta property="og:updated_time" content="2017-02-20T14:43:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Boot 多模块开发">
+<meta name="twitter:description" content="本文假设项目名为 wxsdk，它有如下模块 123456789wxsdk├── bean├── constant├── dao├── listener├── service├── utils├── webapp├── wx-plugin wxsdk 根目录下的 pom 文件如下1234567891011121314151617181920212223242526272829303132333435">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#wxsdk-根目录下的-pom-文件如下"><span class="toc-text">wxsdk 根目录下的 pom 文件如下</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#子模块的-pom"><span class="toc-text">子模块的 pom</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#webapp-模块的-pom"><span class="toc-text">webapp 模块的 pom</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置文件存放的问题"><span class="toc-text">配置文件存放的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mybatis-配置文件存放的问题"><span class="toc-text">mybatis 配置文件存放的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置多个-redis-实例"><span class="toc-text">配置多个 redis 实例</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-Spring Boot 多模块开发" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            Spring Boot 多模块开发
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.02.20</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#java">
+        <span class="tag-name">java</span>
+    <span class="tag-size">( 116 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#spring">
+        <span class="tag-name">spring</span>
+    <span class="tag-size">( 27 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#spring-boot">
+        <span class="tag-name">spring-boot</span>
+    <span class="tag-size">( 4 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <p>本文假设项目名为 wxsdk，它有如下模块</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">wxsdk</div><div class="line">├── bean</div><div class="line">├── constant</div><div class="line">├── dao</div><div class="line">├── listener</div><div class="line">├── service</div><div class="line">├── utils</div><div class="line">├── webapp</div><div class="line">├── wx-plugin</div></pre></td></tr></table></figure>
+<h2 id="wxsdk-根目录下的-pom-文件如下"><a href="#wxsdk-根目录下的-pom-文件如下" class="headerlink" title="wxsdk 根目录下的 pom 文件如下"></a>wxsdk 根目录下的 pom 文件如下</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div><div class="line">244</div><div class="line">245</div><div class="line">246</div><div class="line">247</div><div class="line">248</div><div class="line">249</div><div class="line">250</div><div class="line">251</div><div class="line">252</div><div class="line">253</div><div class="line">254</div><div class="line">255</div><div class="line">256</div><div class="line">257</div><div class="line">258</div><div class="line">259</div><div class="line">260</div><div class="line">261</div><div class="line">262</div><div class="line">263</div><div class="line">264</div><div class="line">265</div><div class="line">266</div><div class="line">267</div><div class="line">268</div><div class="line">269</div><div class="line">270</div><div class="line">271</div><div class="line">272</div><div class="line">273</div><div class="line">274</div><div class="line">275</div><div class="line">276</div><div class="line">277</div><div class="line">278</div><div class="line">279</div><div class="line">280</div><div class="line">281</div><div class="line">282</div><div class="line">283</div><div class="line">284</div><div class="line">285</div><div class="line">286</div><div class="line">287</div><div class="line">288</div><div class="line">289</div><div class="line">290</div><div class="line">291</div><div class="line">292</div><div class="line">293</div><div class="line">294</div><div class="line">295</div><div class="line">296</div><div class="line">297</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span>?&gt;</div><div class="line">&lt;project xmlns=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></div><div class="line">         xmlns:xsi=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">         xsi:schemaLocation=<span class="string">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</div><div class="line">    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</div><div class="line"></div><div class="line">    &lt;parent&gt;</div><div class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;1.3.8.RELEASE&lt;/version&gt;</div><div class="line">            &lt;relativePath /&gt;</div><div class="line">    &lt;/parent&gt;</div><div class="line"></div><div class="line">    &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;parent&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">    &lt;modules&gt;</div><div class="line">        &lt;module&gt;wx-plugin&lt;/module&gt;</div><div class="line">        &lt;module&gt;constant&lt;/module&gt;</div><div class="line">        &lt;module&gt;dao&lt;/module&gt;</div><div class="line">        &lt;module&gt;bean&lt;/module&gt;</div><div class="line">        &lt;module&gt;service&lt;/module&gt;</div><div class="line">        &lt;module&gt;listener&lt;/module&gt;</div><div class="line">        &lt;module&gt;utils&lt;/module&gt;</div><div class="line">        &lt;module&gt;webapp&lt;/module&gt;</div><div class="line">    &lt;/modules&gt;</div><div class="line">    &lt;packaging&gt;pom&lt;/packaging&gt;</div><div class="line"></div><div class="line"></div><div class="line">    &lt;dependencyManagement&gt;</div><div class="line">        &lt;dependencies&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;commons-lang3&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;3.4&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;!-- https://mvnrepository.com/artifact/commons-codec/commons-codec --&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;commons-codec&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;commons-codec&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.10&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;logback-core&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.1.10&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;logback-classic&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.1.10&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api --&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.slf4j&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.7.22&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;2.6.7&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;jackson-annotations&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;2.6.7&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter --&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.mybatis.spring.boot&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;mybatis-spring-boot-starter&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.1.1&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot --&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;spring-boot&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.3.8.RELEASE&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.3.8.RELEASE&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support --&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.springframework&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;spring-context-support&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;<span class="variable">$&#123;spring.version&#125;</span>&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.springframework&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;spring-web&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;<span class="variable">$&#123;spring.version&#125;</span>&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api --&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;javax.servlet&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;3.1.0&lt;/version&gt;</div><div class="line">                &lt;scope&gt;provided&lt;/scope&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;com.thoughtworks.xstream&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;xstream&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.4.7&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;!-- https://mvnrepository.com/artifact/commons-io/commons-io --&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;commons-io&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;commons-io&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;2.5&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.apache.velocity&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;velocity&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.7&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.apache.velocity&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;velocity-tools&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;2.0&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-redis --&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;spring-boot-starter-redis&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.3.8.RELEASE&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl --&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.codehaus.jackson&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;jackson-mapper-asl&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.8.8&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.springframework.amqp&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;spring-rabbit&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;<span class="variable">$&#123;spring-amqp.version&#125;</span>&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;junit&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;junit&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;4.12&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.testng&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;testng&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;RELEASE&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;com.squareup.okhttp&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;okhttp&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;2.0.0&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;commons-httpclient&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;commons-httpclient&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;3.1&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;net.coobird&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;thumbnailator&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;0.4.7&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;jaudiotagger&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;2.0.3&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;commons-dbcp&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;commons-dbcp&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.4&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop --&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;spring-boot-starter-aop&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.3.8.RELEASE&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;mysql&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;5.1.18&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;commons-fileupload&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;commons-fileupload&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.2.1&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;io.springfox&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;2.4.0&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;io.springfox&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;2.4.0&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;!--</div><div class="line">            &lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter-amqp&lt;/artifactId&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter-aop&lt;/artifactId&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter-batch&lt;/artifactId&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter-mail&lt;/artifactId&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line"></div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;</div><div class="line">			&lt;scope&gt;provided&lt;/scope&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</div><div class="line">			&lt;scope&gt;<span class="built_in">test</span>&lt;/scope&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line">            &lt;dependency&gt;</div><div class="line">                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;</div><div class="line">                &lt;version&gt;1.5.1.RELEASE&lt;/version&gt;</div><div class="line">            &lt;/dependency&gt;</div><div class="line"></div><div class="line">            &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;spring-boot-starter-amqp&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">            --&gt;</div><div class="line">        &lt;/dependencies&gt;</div><div class="line">    &lt;/dependencyManagement&gt;</div><div class="line"></div><div class="line">    &lt;build&gt;</div><div class="line">        &lt;resources&gt;</div><div class="line">            &lt;resource&gt;</div><div class="line">                &lt;directory&gt;src/main/java&lt;/directory&gt;</div><div class="line">                &lt;includes&gt;</div><div class="line">                    &lt;include&gt;**/*.xml&lt;/include&gt;</div><div class="line">                &lt;/includes&gt;</div><div class="line">                &lt;filtering&gt;<span class="literal">false</span>&lt;/filtering&gt;</div><div class="line">            &lt;/resource&gt;</div><div class="line">            &lt;resource&gt;</div><div class="line">                &lt;directory&gt;src/main/resources&lt;/directory&gt;</div><div class="line">                &lt;includes&gt;</div><div class="line">                    &lt;include&gt;**/*.*&lt;/include&gt;</div><div class="line">                    &lt;include&gt;**/*&lt;/include&gt;</div><div class="line">                &lt;/includes&gt;</div><div class="line">                &lt;filtering&gt;<span class="literal">true</span>&lt;/filtering&gt;</div><div class="line">            &lt;/resource&gt;</div><div class="line">        &lt;/resources&gt;</div><div class="line">    &lt;/build&gt;</div><div class="line"></div><div class="line">    &lt;properties&gt;</div><div class="line">        &lt;maven.compiler.source&gt;1.7&lt;/maven.compiler.source&gt;</div><div class="line">        &lt;maven.compiler.target&gt;1.7&lt;/maven.compiler.target&gt;</div><div class="line">        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;</div><div class="line">        &lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;</div><div class="line">        &lt;java.version&gt;1.7&lt;/java.version&gt;</div><div class="line">        &lt;spring.version&gt;4.2.8.RELEASE&lt;/spring.version&gt;</div><div class="line">        &lt;spring-amqp.version&gt;1.5.6.RELEASE&lt;/spring-amqp.version&gt;</div><div class="line">    &lt;/properties&gt;</div><div class="line">&lt;/project&gt;</div></pre></td></tr></table></figure>
+<p>这个 pom 父 pom，主要用于配置子模块，以及子模块依赖的版本统一的问题。如果这里的<code>&lt;build&gt;</code>元素，是可以应用到所有子模块的<code>&lt;build&gt;</code>操作的。</p>
+<h2 id="子模块的-pom"><a href="#子模块的-pom" class="headerlink" title="子模块的 pom"></a>子模块的 pom</h2><p>这里只是举个 service 模块的 pom.xml 为例子，其他模块的 pom 是一类似的</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span>?&gt;</div><div class="line">&lt;project xmlns=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></div><div class="line">         xmlns:xsi=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">         xsi:schemaLocation=<span class="string">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</div><div class="line">    &lt;parent&gt;</div><div class="line">        &lt;artifactId&gt;parent&lt;/artifactId&gt;</div><div class="line">        &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">        &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">    &lt;/parent&gt;</div><div class="line">    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</div><div class="line"></div><div class="line">    &lt;artifactId&gt;service&lt;/artifactId&gt;</div><div class="line"></div><div class="line">    &lt;dependencies&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;dao&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;constant&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;spring-boot&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;bean&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;utils&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;javax.servlet&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;</div><div class="line">            &lt;scope&gt;compile&lt;/scope&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">        &lt;!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-redis --&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;spring-boot-starter-redis&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.springframework.amqp&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;spring-rabbit&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;com.squareup.okhttp&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;okhttp&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;commons-httpclient&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;commons-httpclient&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;net.coobird&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;thumbnailator&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;jaudiotagger&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl --&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.codehaus.jackson&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;jackson-mapper-asl&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">    &lt;/dependencies&gt;</div><div class="line"></div><div class="line">&lt;/project&gt;</div></pre></td></tr></table></figure>
+<p>在子模块下面的 pom 的依赖，是不用写版本号（项目模块自身除外）的。项目模块里，其实也可以用<code>${project.version}</code> 来代替会更好点。</p>
+<h2 id="webapp-模块的-pom"><a href="#webapp-模块的-pom" class="headerlink" title="webapp 模块的 pom"></a>webapp 模块的 pom</h2><p>因为这是一个web 应用，所以该模块相当于主模块。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span>?&gt;</div><div class="line">&lt;project xmlns=<span class="string">"http://maven.apache.org/POM/4.0.0"</span></div><div class="line">         xmlns:xsi=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">         xsi:schemaLocation=<span class="string">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span>&gt;</div><div class="line">    &lt;parent&gt;</div><div class="line">        &lt;artifactId&gt;parent&lt;/artifactId&gt;</div><div class="line">        &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">        &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">    &lt;/parent&gt;</div><div class="line">    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</div><div class="line"></div><div class="line">    &lt;artifactId&gt;webapp&lt;/artifactId&gt;</div><div class="line"></div><div class="line"></div><div class="line">    &lt;dependencies&gt;</div><div class="line">        &lt;!-- module dependency --&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;service&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;listener&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;utils&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;wx-plugin&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;constant&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;com.company.wxsdk&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;bean&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;0.0.1&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;spring-boot-starter-aop&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</div><div class="line">            &lt;scope&gt;<span class="built_in">test</span>&lt;/scope&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;commons-lang3&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;commons-fileupload&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;commons-fileupload&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;io.springfox&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line"></div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;io.springfox&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">    &lt;/dependencies&gt;</div><div class="line"></div><div class="line">    &lt;build&gt;</div><div class="line">        &lt;plugins&gt;</div><div class="line">            &lt;plugin&gt;</div><div class="line">                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</div><div class="line">                &lt;executions&gt;</div><div class="line">                    &lt;execution&gt;</div><div class="line">                        &lt;goals&gt;</div><div class="line">                            &lt;goal&gt;repackage&lt;/goal&gt;</div><div class="line">                        &lt;/goals&gt;</div><div class="line">                    &lt;/execution&gt;</div><div class="line">                &lt;/executions&gt;</div><div class="line">            &lt;/plugin&gt;</div><div class="line">        &lt;/plugins&gt;</div><div class="line">    &lt;/build&gt;</div><div class="line"></div><div class="line"></div><div class="line">&lt;/project&gt;&gt;</div></pre></td></tr></table></figure>
+<p>主模块的<code>&lt;build&gt;</code>元素要加上<code>spring-boot-maven-plugin</code>插件。</p>
+<h2 id="配置文件存放的问题"><a href="#配置文件存放的问题" class="headerlink" title="配置文件存放的问题"></a>配置文件存放的问题</h2><p>spring boot 应用，并不能从 jar 里读取<code>application.propertis</code>文件（即配置文件的位置，就算是写成<code>classpath*:application</code>，spring boot 也是读取不了的），这个不像普通的 spring 项目一样。（之前也写个一份maven 模块化开发的 blog，然后可以有一个 config 模块，然后将配置文件，都放在这个模块里，然后在主模块里，通过写成<code>classpath*:xxx.properties</code> 来加载，但 spring boot 并不行）</p>
+<h2 id="mybatis-配置文件存放的问题"><a href="#mybatis-配置文件存放的问题" class="headerlink" title="mybatis 配置文件存放的问题"></a>mybatis 配置文件存放的问题</h2><p>因为项目里的 xml，是放在 java 文件的同一个目录的，但 maven 默认打包时，资源文件是不包含 xml 文件的。<br>所以在要<code>build</code>配置里，添加上</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">&lt;build&gt;</div><div class="line">        &lt;resources&gt;</div><div class="line">            &lt;resource&gt;</div><div class="line">                &lt;directory&gt;src/main/java&lt;/directory&gt;</div><div class="line">                &lt;includes&gt;</div><div class="line">                    &lt;include&gt;**/*.xml&lt;/include&gt;</div><div class="line">                &lt;/includes&gt;</div><div class="line">                &lt;filtering&gt;<span class="literal">false</span>&lt;/filtering&gt;</div><div class="line">            &lt;/resource&gt;</div><div class="line">            &lt;resource&gt;</div><div class="line">                &lt;directory&gt;src/main/resources&lt;/directory&gt;</div><div class="line">                &lt;includes&gt;</div><div class="line">                    &lt;include&gt;**/*.*&lt;/include&gt;</div><div class="line">                    &lt;include&gt;**/*&lt;/include&gt;</div><div class="line">                &lt;/includes&gt;</div><div class="line">                &lt;filtering&gt;<span class="literal">true</span>&lt;/filtering&gt;</div><div class="line">            &lt;/resource&gt;</div><div class="line">        &lt;/resources&gt;</div><div class="line">    &lt;/build&gt;</div></pre></td></tr></table></figure>
+<h2 id="配置多个-redis-实例"><a href="#配置多个-redis-实例" class="headerlink" title="配置多个 redis 实例"></a>配置多个 redis 实例</h2><p>因为项目里，需要用到多个 redis 实例来通信。配置如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">package com.company.wxsdk.service;</div><div class="line"></div><div class="line">import org.springframework.beans.factory.annotation.Qualifier;</div><div class="line">import org.springframework.beans.factory.annotation.Value;</div><div class="line">import org.springframework.context.annotation.Bean;</div><div class="line">import org.springframework.context.annotation.Configuration;</div><div class="line">import org.springframework.context.annotation.ImportResource;</div><div class="line">import org.springframework.context.annotation.Primary;</div><div class="line">import org.springframework.data.redis.connection.RedisConnectionFactory;</div><div class="line">import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;</div><div class="line">import org.springframework.data.redis.core.RedisTemplate;</div><div class="line">import org.springframework.data.redis.serializer.GenericToStringSerializer;</div><div class="line">import org.springframework.data.redis.serializer.StringRedisSerializer;</div><div class="line"></div><div class="line">import java.nio.charset.StandardCharsets;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Created by emacsist on 2017/2/17.</div><div class="line"> */</div><div class="line">@Configuration</div><div class="line">@ImportResource(<span class="string">"classpath:wxsdk-service-context.xml"</span>)</div><div class="line">public class ServiceConfiguration &#123;</div><div class="line"></div><div class="line">    @Value(<span class="string">"<span class="variable">$&#123;redis.host&#125;</span>"</span>)</div><div class="line">    private String redisHost;</div><div class="line"></div><div class="line">    @Value(<span class="string">"<span class="variable">$&#123;redis.port&#125;</span>"</span>)</div><div class="line">    private int redisPort;</div><div class="line"></div><div class="line">    @Value(<span class="string">"<span class="variable">$&#123;redis.password&#125;</span>"</span>)</div><div class="line">    private String <span class="built_in">pwd</span>;</div><div class="line"></div><div class="line">    @Value(<span class="string">"<span class="variable">$&#123;redis.database&#125;</span>"</span>)</div><div class="line">    private int db;</div><div class="line"></div><div class="line">    @Value(<span class="string">"<span class="variable">$&#123;redis.v2.host&#125;</span>"</span>)</div><div class="line">    private String v2RedisHost;</div><div class="line"></div><div class="line">    @Value(<span class="string">"<span class="variable">$&#123;redis.v2.port&#125;</span>"</span>)</div><div class="line">    private int v2RedisPort;</div><div class="line"></div><div class="line">    @Value(<span class="string">"<span class="variable">$&#123;redis.v2.password&#125;</span>"</span>)</div><div class="line">    private String v2Pwd;</div><div class="line"></div><div class="line">    @Value(<span class="string">"<span class="variable">$&#123;redis.v2.database&#125;</span>"</span>)</div><div class="line">    private int v2DB;</div><div class="line"></div><div class="line"></div><div class="line">    @Primary</div><div class="line">    @Bean</div><div class="line">    public JedisConnectionFactory <span class="function"><span class="title">jedisConnectionFactory</span></span>()&#123;</div><div class="line">        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();</div><div class="line">        jedisConnectionFactory.setPassword(<span class="built_in">pwd</span>);</div><div class="line">        jedisConnectionFactory.setHostName(redisHost);</div><div class="line">        jedisConnectionFactory.setPort(redisPort);</div><div class="line">        jedisConnectionFactory.setDatabase(db);</div><div class="line">        <span class="built_in">return</span> jedisConnectionFactory;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Bean</div><div class="line">    public JedisConnectionFactory <span class="function"><span class="title">v2redisConnectionFactory</span></span>()&#123;</div><div class="line">        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();</div><div class="line">        jedisConnectionFactory.setPassword(v2Pwd);</div><div class="line">        jedisConnectionFactory.setHostName(v2RedisHost);</div><div class="line">        jedisConnectionFactory.setPort(v2RedisPort);</div><div class="line">        jedisConnectionFactory.setDatabase(v2DB);</div><div class="line">        <span class="built_in">return</span> jedisConnectionFactory;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    @Bean</div><div class="line">    public RedisTemplate&lt;String, Object&gt; v2RedisTemplate(@Qualifier(<span class="string">"v2redisConnectionFactory"</span>) RedisConnectionFactory cf) &#123;</div><div class="line">        RedisTemplate&lt;String, Object&gt; redisTemplate = new RedisTemplate&lt;&gt;();</div><div class="line">        redisTemplate.setConnectionFactory(cf);</div><div class="line">        redisTemplate.setKeySerializer(new StringRedisSerializer(StandardCharsets.UTF_8));</div><div class="line">        redisTemplate.setValueSerializer(new GenericToStringSerializer&lt;&gt;(Object.class));</div><div class="line"></div><div class="line">        redisTemplate.setHashKeySerializer(new StringRedisSerializer(StandardCharsets.UTF_8));</div><div class="line">        redisTemplate.setHashValueSerializer(new GenericToStringSerializer&lt;&gt;(Object.class));</div><div class="line">        <span class="built_in">return</span> redisTemplate;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Bean</div><div class="line">    public RedisTemplate&lt;String, Object&gt; redisTemplate(@Qualifier(<span class="string">"jedisConnectionFactory"</span>) RedisConnectionFactory cf) &#123;</div><div class="line">        RedisTemplate&lt;String, Object&gt; redisTemplate = new RedisTemplate&lt;&gt;();</div><div class="line">        redisTemplate.setConnectionFactory(cf);</div><div class="line">        redisTemplate.setKeySerializer(new StringRedisSerializer(StandardCharsets.UTF_8));</div><div class="line">        redisTemplate.setValueSerializer(new GenericToStringSerializer&lt;&gt;(Object.class));</div><div class="line"></div><div class="line">        redisTemplate.setHashKeySerializer(new StringRedisSerializer(StandardCharsets.UTF_8));</div><div class="line">        redisTemplate.setHashValueSerializer(new GenericToStringSerializer&lt;&gt;(Object.class));</div><div class="line">        <span class="built_in">return</span> redisTemplate;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用时：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">## 这种就会使用 jedisConnectionFactory 的 redisTemplate 实例</span></div><div class="line">@Autowired</div><div class="line">private RedisTemplate&lt;String, String&gt; redisTemplate;</div><div class="line"></div><div class="line"><span class="comment">## 这种就会使用 v2redisConnectionFactory 的 v2RedisTemplate 实例</span></div><div class="line"></div><div class="line">@Resource(name = <span class="string">"v2RedisTemplate"</span>)</div><div class="line">private ValueOperations&lt;String, String&gt; valueOperations;</div></pre></td></tr></table></figure>
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

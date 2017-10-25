@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java 一次启动失败分析案例 | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="java,log,jvm," />
+  
+
+  <meta name="description" content="今天，在部署外网的测试环境时，发现启动时报如下错误： 1234567Java HotSpot(TM) 64-Bit Server VM warning: INFO: os::commit_memory(0x00000000c6d80000, 42991616, 0) failed; error=&apos;Cannot allocate memory&apos; (errno=12)## There is insuf">
+<meta name="keywords" content="java,log,jvm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 一次启动失败分析案例">
+<meta property="og:url" content="https://emacsist.github.io/2017/02/09/Java 一次启动失败分析案例/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="今天，在部署外网的测试环境时，发现启动时报如下错误： 1234567Java HotSpot(TM) 64-Bit Server VM warning: INFO: os::commit_memory(0x00000000c6d80000, 42991616, 0) failed; error=&apos;Cannot allocate memory&apos; (errno=12)## There is insuf">
+<meta property="og:updated_time" content="2017-02-09T08:37:35.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java 一次启动失败分析案例">
+<meta name="twitter:description" content="今天，在部署外网的测试环境时，发现启动时报如下错误： 1234567Java HotSpot(TM) 64-Bit Server VM warning: INFO: os::commit_memory(0x00000000c6d80000, 42991616, 0) failed; error=&apos;Cannot allocate memory&apos; (errno=12)## There is insuf">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#top"><span class="toc-text">top</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#free-m"><span class="toc-text">free -m</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dump-出-wxsdk-的-heap-状态"><span class="toc-text">dump 出 wxsdk 的 heap 状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MAT-结果"><span class="toc-text">MAT 结果</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Problem-Suspect-1"><span class="toc-text">Problem Suspect 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Problem-Suspect-2"><span class="toc-text">Problem Suspect 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Problem-Suspect-3"><span class="toc-text">Problem Suspect 3</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分析结果及结论"><span class="toc-text">分析结果及结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决"><span class="toc-text">解决</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-Java 一次启动失败分析案例" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            Java 一次启动失败分析案例
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.02.09</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#java">
+        <span class="tag-name">java</span>
+    <span class="tag-size">( 116 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#jvm">
+        <span class="tag-name">jvm</span>
+    <span class="tag-size">( 13 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#log">
+        <span class="tag-name">log</span>
+    <span class="tag-size">( 5 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <p>今天，在部署外网的测试环境时，发现启动时报如下错误：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Java HotSpot(TM) 64-Bit Server VM warning: INFO: os::commit_memory(0x00000000c6d80000, 42991616, 0) failed; error=<span class="string">'Cannot allocate memory'</span> (errno=12)</div><div class="line"><span class="comment">#</span></div><div class="line"><span class="comment"># There is insufficient memory for the Java Runtime Environment to continue.</span></div><div class="line"><span class="comment"># Native memory allocation (malloc) failed to allocate 42991616 bytes for committing reserved memory.</span></div><div class="line"><span class="comment"># An error report file with more information is saved as:</span></div><div class="line"><span class="comment"># /home/username/hs_err_pid19325.log</span></div></pre></td></tr></table></figure>
+<p>根据 JVM 的日志 提示，很明显是因为内存不足，导致分配内存给 JVM 时启动失败。</p>
+<p>因为平时都一直可以启动成功的，为什么今天却报因为内存问题而导致项目启动失败。</p>
+<h2 id="top"><a href="#top" class="headerlink" title="top"></a>top</h2><p>查看当前系统的进程状态，发现有一个 Java 进程：3679，属于 wxsdk 项目的，占用了 23% 的内存（物理内存为 8GB），这个值得注意，因为平时这些 Java 进程的内存，一般只是占用%几的内存的。</p>
+<h2 id="free-m"><a href="#free-m" class="headerlink" title="free -m"></a>free -m</h2><p>查看当前系统的总内存状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">free -m</div><div class="line">             total       used       free     shared    buffers     cached</div><div class="line">Mem:          3953       3254        698          0         28         73</div><div class="line">-/+ buffers/cache:       3152        800</div><div class="line">Swap:            0          0          0</div></pre></td></tr></table></figure>
+<h2 id="dump-出-wxsdk-的-heap-状态"><a href="#dump-出-wxsdk-的-heap-状态" class="headerlink" title="dump 出 wxsdk 的 heap 状态"></a>dump 出 wxsdk 的 heap 状态</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">jmap -dump:format=b,file=/tmp/heap.hprof 3670</div></pre></td></tr></table></figure>
+<p>然后下载回地本，使用 Eclipse 的 MAT 分析：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">/Applications/mat.app/Contents/MacOS/MemoryAnalyzer -vmargs -Xmx8g -XX:-UseGCOverheadLimit heap.hprof</div></pre></td></tr></table></figure>
+<h2 id="MAT-结果"><a href="#MAT-结果" class="headerlink" title="MAT 结果"></a>MAT 结果</h2><p>MAT 报告的问题有：</p>
+<h3 id="Problem-Suspect-1"><a href="#Problem-Suspect-1" class="headerlink" title="Problem Suspect 1"></a>Problem Suspect 1</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">The classloader/component <span class="string">"org.apache.catalina.loader.WebappClassLoader @ 0xc2578048"</span> occupies 11,875,448 (31.20%) bytes. The memory is accumulated <span class="keyword">in</span> classloader/component <span class="string">"org.apache.catalina.loader.WebappClassLoader @ 0xc2578048"</span>.</div><div class="line"></div><div class="line">Keywords</div><div class="line">org.apache.catalina.loader.WebappClassLoader @ 0xc2578048</div></pre></td></tr></table></figure>
+<h3 id="Problem-Suspect-2"><a href="#Problem-Suspect-2" class="headerlink" title="Problem Suspect 2"></a>Problem Suspect 2</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">The classloader/component <span class="string">"org.apache.catalina.loader.StandardClassLoader @ 0xc25e67d8"</span> occupies 3,954,080 (10.39%) bytes. The memory is accumulated <span class="keyword">in</span> one instance of <span class="string">"org.apache.tomcat.util.bcel.classfile.ConstantUtf8<span class="variable">$1</span>"</span> loaded by <span class="string">"org.apache.catalina.loader.StandardClassLoader @ 0xc25e67d8"</span>.</div><div class="line"></div><div class="line">Keywords</div><div class="line">org.apache.tomcat.util.bcel.classfile.ConstantUtf8<span class="variable">$1</span></div><div class="line">org.apache.catalina.loader.StandardClassLoader @ 0xc25e67d8</div><div class="line"></div><div class="line">Details »</div></pre></td></tr></table></figure>
+<h3 id="Problem-Suspect-3"><a href="#Problem-Suspect-3" class="headerlink" title="Problem Suspect 3"></a>Problem Suspect 3</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">5,236 instances of <span class="string">"java.lang.Class"</span>, loaded by <span class="string">"&lt;system class loader&gt;"</span> occupy 4,494,072 (11.81%) bytes. </div><div class="line"></div><div class="line">Keywords</div><div class="line">java.lang.Class</div></pre></td></tr></table></figure>
+<h2 id="分析结果及结论"><a href="#分析结果及结论" class="headerlink" title="分析结果及结论"></a>分析结果及结论</h2><p>从上面的 MAT 的结果可知，是因为 Tomcat 的 ClassLoader 的问题，导致内存过大。而 ClassLoader 的问题，一般来说有如下两种情况:</p>
+<ul>
+<li><p>要加载的类本身就过多</p>
+</li>
+<li><p>因为热加载，导致加载的 class 过多</p>
+</li>
+</ul>
+<p>然后查看 Tomcat 的配置文件 <code>Tomcat 目录/conf/server.xml</code>，发现 <code>&lt;Host name=&quot;localhost&quot;  appBase=&quot;webapps&quot; unpackWARs=&quot;true&quot; autoDeploy=&quot;true&quot;&gt;</code> 中的<code>autoDeploy</code>为<code>true</code>，表示 Tomcat 会自动进行热加载。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><ul>
+<li><p>关闭 Tomcat 的热加载<code>autoDeploy=false</code></p>
+</li>
+<li><p>重新启动 wxsdk 项目，以释放这些内存空间</p>
+</li>
+</ul>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

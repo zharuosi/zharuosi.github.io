@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>[翻译]How to Interpret the Erlang Crash Dumps | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="翻译,erlang,rabbitmq," />
+  
+
+  <meta name="description" content="原文 如何解释 Erlang Crash Dumps本节介绍 Erlang 运行时系统在异常退出时生成的 erl_crash.dump 文件  注意：在 Erlang/OTP R9C 中， Erlang crash dump 有大幅的改变。在本节中的信息不能直接应用到旧的 dumps 文件中。但是，如果你使用了 crashdump_viewer(3) 查看旧的 dumps 文件，则 crash d">
+<meta name="keywords" content="翻译,erlang,rabbitmq">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[翻译]How to Interpret the Erlang Crash Dumps">
+<meta property="og:url" content="https://emacsist.github.io/2017/05/13/翻译-How-to-Interpret-the-Erlang-Crash-Dumps/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="原文 如何解释 Erlang Crash Dumps本节介绍 Erlang 运行时系统在异常退出时生成的 erl_crash.dump 文件  注意：在 Erlang/OTP R9C 中， Erlang crash dump 有大幅的改变。在本节中的信息不能直接应用到旧的 dumps 文件中。但是，如果你使用了 crashdump_viewer(3) 查看旧的 dumps 文件，则 crash d">
+<meta property="og:updated_time" content="2017-05-13T16:39:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[翻译]How to Interpret the Erlang Crash Dumps">
+<meta name="twitter:description" content="原文 如何解释 Erlang Crash Dumps本节介绍 Erlang 运行时系统在异常退出时生成的 erl_crash.dump 文件  注意：在 Erlang/OTP R9C 中， Erlang crash dump 有大幅的改变。在本节中的信息不能直接应用到旧的 dumps 文件中。但是，如果你使用了 crashdump_viewer(3) 查看旧的 dumps 文件，则 crash d">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#如何解释-Erlang-Crash-Dumps"><span class="toc-text">如何解释 Erlang Crash Dumps</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#一般信息（General-Information）"><span class="toc-text">一般信息（General Information）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Crash-Dump-的原因-Slogan"><span class="toc-text">Crash Dump 的原因(Slogan)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cannot-allocate-bytes-of-memory-of-type-““"><span class="toc-text">: Cannot allocate  bytes of memory (of type ““)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cannot-reallocate-bytes-of-memory-of-type-““"><span class="toc-text">: Cannot reallocate  bytes of memory (of type ““)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Unexpected-op-code"><span class="toc-text">Unexpected op code </span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Module-undefined-Function-undefined-No-function-1-No-function-start-2"><span class="toc-text">Module  undefined | Function  undefined | No function :/1 | No function :start/2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Driver-select-called-with-too-large-file-descriptor-N"><span class="toc-text">Driver_select called with too large file descriptor N</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Received-SIGUSR1"><span class="toc-text">Received SIGUSR1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kernel-pid-terminated"><span class="toc-text">Kernel pid terminated () ()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Init-terminating-in-do-boot"><span class="toc-text">Init terminating in do_boot ()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Could-not-start-kernel-pid"><span class="toc-text">Could not start kernel pid () ()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其他错误"><span class="toc-text">其他错误</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原子数"><span class="toc-text">原子数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#调度器信息（Scheduler-Information）"><span class="toc-text">调度器信息（Scheduler Information）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#scheduler-id"><span class="toc-text">=scheduler:id</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scheduler-Sleep-Info-Flags"><span class="toc-text">Scheduler Sleep Info Flags</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scheduler-Sleep-Info-Aux-Work"><span class="toc-text">Scheduler Sleep Info Aux Work</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Current-Port"><span class="toc-text">Current Port</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Current-Process"><span class="toc-text">Current Process</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Current-Process-Limited-Stack-Trace"><span class="toc-text">Current Process Limited Stack Trace</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Run-Queue"><span class="toc-text">Run Queue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#crashed"><span class="toc-text">** crashed **</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#内存信息（Memory-Information）"><span class="toc-text">内存信息（Memory Information）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#内部表信息（Internal-Table-Information）"><span class="toc-text">内部表信息（Internal Table Information）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分配区域（Allocated-Areas）"><span class="toc-text">分配区域（Allocated Areas）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分配器（Allocator）"><span class="toc-text">分配器（Allocator）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#进程信息（Process-Information）"><span class="toc-text">进程信息（Process Information）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#proc"><span class="toc-text">=proc:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#State"><span class="toc-text">State</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Scheduled"><span class="toc-text">Scheduled</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Waiting"><span class="toc-text">Waiting</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Running"><span class="toc-text">Running</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exiting"><span class="toc-text">Exiting</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Garbing"><span class="toc-text">Garbing</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Suspended"><span class="toc-text">Suspended</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Registered-name"><span class="toc-text">Registered name</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spawned-as"><span class="toc-text">Spawned as</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Last-scheduled-in-for-Current-call"><span class="toc-text">Last scheduled in for | Current call</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spawned-by"><span class="toc-text">Spawned by</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Started"><span class="toc-text">Started</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Message-queue-length"><span class="toc-text">Message queue length</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Number-of-heap-fragments"><span class="toc-text">Number of heap fragments</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Heap-fragment-data"><span class="toc-text">Heap fragment data</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Link-list"><span class="toc-text">Link list</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reductions"><span class="toc-text">Reductions</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Stack-heap"><span class="toc-text">Stack+heap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OldHeap"><span class="toc-text">OldHeap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Heap-unused-OldHeap-unused"><span class="toc-text">Heap unused, OldHeap unused</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Memory"><span class="toc-text">Memory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Program-counter"><span class="toc-text">Program counter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CP"><span class="toc-text">CP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Arity"><span class="toc-text">Arity</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Internal-State"><span class="toc-text">Internal State</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其他"><span class="toc-text">其他</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Port-信息"><span class="toc-text">Port 信息</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ETS-表"><span class="toc-text">ETS 表</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ets"><span class="toc-text">=ets:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Table"><span class="toc-text">Table</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Name"><span class="toc-text">Name</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hash-table-Buckets"><span class="toc-text">Hash table, Buckets</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hash-table-Chain-Length"><span class="toc-text">Hash table, Chain Length</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ordered-set-AVL-tree-Elements"><span class="toc-text">Ordered set (AVL tree), Elements</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Fixed"><span class="toc-text">Fixed</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Objects"><span class="toc-text">Objects</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Words"><span class="toc-text">Words</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Type"><span class="toc-text">Type</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compressed"><span class="toc-text">Compressed</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Protection"><span class="toc-text">Protection</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Write-Concurrency"><span class="toc-text">Write Concurrency</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Read-Concurrency"><span class="toc-text">Read Concurrency</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#计时器（Timers）"><span class="toc-text">计时器（Timers）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#timer"><span class="toc-text">=timer:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Message"><span class="toc-text">Message</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Time-left"><span class="toc-text">Time left</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式信息（Distribution-Information）"><span class="toc-text">分布式信息（Distribution Information）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#node"><span class="toc-text">=node:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#no-distribution"><span class="toc-text">no_distribution</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#visible-node"><span class="toc-text">=visible_node:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hidden-node"><span class="toc-text">=hidden_node:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#not-connected"><span class="toc-text">=not_connected:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Name-1"><span class="toc-text">Name</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Controller"><span class="toc-text">Controller</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Creation"><span class="toc-text">Creation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Remote-monitoring"><span class="toc-text">Remote monitoring:  </span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Remotely-monitored-by"><span class="toc-text">Remotely monitored by:  </span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Remote-link"><span class="toc-text">Remote link:  </span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#已加载模块的信息（Loaded-Module-Information）"><span class="toc-text">已加载模块的信息（Loaded Module Information）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#mod"><span class="toc-text">=mod:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Current-size"><span class="toc-text">Current size</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Old-size"><span class="toc-text">Old size</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Current-attributes"><span class="toc-text">Current attributes</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Old-attributes"><span class="toc-text">Old attributes</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Current-compilation-info"><span class="toc-text">Current compilation info</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Old-compilation-info"><span class="toc-text">Old compilation info</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Fun-信息"><span class="toc-text">Fun 信息</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#fun"><span class="toc-text">=fun</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Module"><span class="toc-text">Module</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Uniq-Index"><span class="toc-text">Uniq, Index</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Address"><span class="toc-text">Address</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Native-address"><span class="toc-text">Native_address</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Refc"><span class="toc-text">Refc</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#进程数据（Process-Data）"><span class="toc-text">进程数据（Process Data）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#原子（Atoms）"><span class="toc-text">原子（Atoms）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#免责声明（Disclaimer）"><span class="toc-text">免责声明（Disclaimer）</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-翻译-How-to-Interpret-the-Erlang-Crash-Dumps" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            [翻译]How to Interpret the Erlang Crash Dumps
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.05.13</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#erlang">
+        <span class="tag-name">erlang</span>
+    <span class="tag-size">( 4 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#rabbitmq">
+        <span class="tag-name">rabbitmq</span>
+    <span class="tag-size">( 19 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#翻译">
+        <span class="tag-name">翻译</span>
+    <span class="tag-size">( 23 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <p><a href="http://erlang.org/doc/apps/erts/crash_dump.html" target="_blank" rel="external">原文</a></p>
+<h1 id="如何解释-Erlang-Crash-Dumps"><a href="#如何解释-Erlang-Crash-Dumps" class="headerlink" title="如何解释 Erlang Crash Dumps"></a>如何解释 Erlang Crash Dumps</h1><p>本节介绍 Erlang 运行时系统在异常退出时生成的 <em>erl_crash.dump</em> 文件</p>
+<blockquote>
+<p>注意：<br>在 Erlang/OTP R9C 中， Erlang crash dump 有大幅的改变。在本节中的信息不能直接应用到旧的 dumps 文件中。但是，如果你使用了 <a href="http://erlang.org/doc/man/crashdump_viewer.html" target="_blank" rel="external">crashdump_viewer(3)</a> 查看旧的 dumps 文件，则 crash dumps 文件会被转换为与此相类似的格式。</p>
+</blockquote>
+<p>系统将 <em>crash dump</em> 文件写入模拟器（译注：即 Erlang虚拟机，类似JVM）的当前目录（译注：即你在哪个目录中启动 Erlang 虚拟机）或由环境变量 <em>ERL_CRASH_DUMP</em> 指定的文件中（无论是哪种系统都如此）。对于要写入的 crash dump 文件，必须是在一个已经挂载的可写入的文件系统。</p>
+<p>主要由于两种原因之一会导致写 <em>crash dump</em> 文件：内置函数 <em>erlang:halt/1</em> 从正在执行的 Erlang 代码中被显式地带有一个 <em>string</em> 参数来调用，或者运行时系统检测到无法处理的错误。最常见的系统无法处理错误的原因是由外部的限制导致的，例如内存不足。由于内部错误引起的 crash dump 可能会由于系统在模拟器自身达到了极限（例如系统中的原子数，或者太多同步ETS表）引起的。通常重新配置模拟器或操作系统可以避免崩溃，因此正确地解释 crash dump 是很重要的。</p>
+<p>在支持OS信号的系统上，它也可 以通过发送 <em>SIGUSR1</em> 信号来停止运行时系统和生成 crash dump。</p>
+<p>Erlang的 crash dump 是一个可读文本文件，但可能比较难以阅读它。使用在 <em>Observer</em> 应用中的 <em>Crashdump Viewer</em> 工具可以简化该任务。这是一个用于浏览 Erlang crash dumps 的基于 <em>wx-widget</em> 的工具。</p>
+<h1 id="一般信息（General-Information）"><a href="#一般信息（General-Information）" class="headerlink" title="一般信息（General Information）"></a>一般信息（General Information）</h1><p>Crash dump 的第一部分显示了以下信息：</p>
+<ul>
+<li>dump 的创建时间</li>
+<li>一个 Slogan ，它指明产生 dump 的原因</li>
+<li>dump 的源节点的系统版本</li>
+<li>源节点正执行的模拟器编译时间</li>
+<li>原子表中的原子数</li>
+<li>导致 crash dump 的运行时系统线程</li>
+</ul>
+<h2 id="Crash-Dump-的原因-Slogan"><a href="#Crash-Dump-的原因-Slogan" class="headerlink" title="Crash Dump 的原因(Slogan)"></a>Crash Dump 的原因(Slogan)</h2><p>Dump 的原因显示在文件的开头:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Slogan: &lt;reason&gt;</div></pre></td></tr></table></figure>
+<p>如果系统是由 <em>BIF</em>  <em>erlang:halt/1</em> 停止的话，则 Slogan 是传递给 BIF 的 <em>string</em> 参数，否则它是模拟器或(Erlang)内核生成的描述。通常，该消息足以知道问题所在，但有时只是一些描述一些消息。请注意，认为的 crash 的原因，<em>仅仅只是认为</em> 。具体的错误原因会因本地应用以及所在的操作系统而异。</p>
+<h2 id="Cannot-allocate-bytes-of-memory-of-type-““"><a href="#Cannot-allocate-bytes-of-memory-of-type-““" class="headerlink" title=": Cannot allocate  bytes of memory (of type ““)"></a><a>: Cannot allocate <n> bytes of memory (of type “<t>“)</t></n></a></h2><p>系统内存不足。 <em><a></a></em> 是失败分配内存的分配器。<em><n></n></em> 是 <em><a></a></em> 试图分配的 <em>字节数</em> 。<em><t></t></em> 是内存需要分配的内存块类型。最常见的情况是进程存储大量的数据。在这种情况下，最常见的导致crash的 <em><t></t></em> 是 <em>heap</em> ， <em>old heap</em> , <em>heap_fraq</em> 或 <em>binary</em> 。更多关于分配器的信息，请看 <a href="http://erlang.org/doc/man/erts_alloc.html" target="_blank" rel="external">erts_alloc(3)</a></p>
+<h2 id="Cannot-reallocate-bytes-of-memory-of-type-““"><a href="#Cannot-reallocate-bytes-of-memory-of-type-““" class="headerlink" title=": Cannot reallocate  bytes of memory (of type ““)"></a><a>: Cannot reallocate <n> bytes of memory (of type “<t>“)</t></n></a></h2><p>与上述相同，除了内存是重新分配，而不是在系统内存不足时被分配外。</p>
+<h2 id="Unexpected-op-code"><a href="#Unexpected-op-code" class="headerlink" title="Unexpected op code "></a>Unexpected op code <n></n></h2><p>编译代码错误， <em>beam</em> 文件损坏或编译器出错。</p>
+<h2 id="Module-undefined-Function-undefined-No-function-1-No-function-start-2"><a href="#Module-undefined-Function-undefined-No-function-1-No-function-start-2" class="headerlink" title="Module  undefined | Function  undefined | No function :/1 | No function :start/2"></a>Module <name> undefined | Function <name> undefined | No function <name>:<name>/1 | No function <name>:start/2</name></name></name></name></name></h2><p>内核/STDLIB 应用程序已经损坏或启动脚本已经损坏</p>
+<h2 id="Driver-select-called-with-too-large-file-descriptor-N"><a href="#Driver-select-called-with-too-large-file-descriptor-N" class="headerlink" title="Driver_select called with too large file descriptor N"></a>Driver_select called with too large file descriptor N</h2><p>套接字的文件描述符数超过 1024 （仅适用于 Unix 系统）。某些 Unix 文件描述符的限制可以设置为超过 1024 ，但 Erlang 只能同时使用 1024 个 套接字/管道（因为 Unix 中 <em>select</em> 调用的限制）。打开常规文件的数量不受此影响。</p>
+<h2 id="Received-SIGUSR1"><a href="#Received-SIGUSR1" class="headerlink" title="Received SIGUSR1"></a>Received SIGUSR1</h2><p>发送 <em>SIGUSR1</em> 信号给 Erlang 虚拟机（仅适用于 Unix 系统）可以强制生成 crash dump 。这个 Slogan 指明 Erlang 虚拟机的 crash dump 是由于收到该信号导致的</p>
+<h2 id="Kernel-pid-terminated"><a href="#Kernel-pid-terminated" class="headerlink" title="Kernel pid terminated () ()"></a>Kernel pid terminated (<who>) (<exit reason="">)</exit></who></h2><p>内核监控程序检测到故障，通常 <em>application_controller</em> 已经关闭（ Who = application_controller, Why = shutdown ）。Application Controller 可能由于许多原因而关闭，最常见的原因是分布式 Erlang 节点的节点名已经被使用了。一棵完整的监控树 <em>crash</em> （即，最顶层的监控者已经退出）也会给出同样的结果。该消息来自 Erlang 代码，而不是虚拟机自身。这总是由于应用程序里的一些故障，无论它是在 OTP 还是用户写的应用都如此。可能第一步适当采取的应该是查看你的应用程序日志。</p>
+<h2 id="Init-terminating-in-do-boot"><a href="#Init-terminating-in-do-boot" class="headerlink" title="Init terminating in do_boot ()"></a>Init terminating in do_boot ()</h2><p>主要的 Erlang 启动顺序已经被终止，最可能是因为启动脚本有错误或无法读取。这通常是配置错误；系统可能使用了错误的 <em>-boot</em> 参数、或从错误的OTP版本中的启动脚本来启动。</p>
+<h2 id="Could-not-start-kernel-pid"><a href="#Could-not-start-kernel-pid" class="headerlink" title="Could not start kernel pid () ()"></a>Could not start kernel pid (<who>) ()</who></h2><p>内核进程之一无法启动。这可能是因为参数有问题（比如 <em>-config</em> 参数中有错）或配置文件错误。检查所有文件是否在正确的位置，并且检查配置文件（如果有的话）是否有损坏。通常消息也会写入控制终端和/或错误日志中以解释哪里错了。</p>
+<h2 id="其他错误"><a href="#其他错误" class="headerlink" title="其他错误"></a>其他错误</h2><p>除上面外的其他错误也可能会发生，因为 <em>erlang:halt/1</em> BIF 可以产生任何消息。如果消息不是由 BIF 产生的，并且不在上面的列表之一中，那可能是由于模拟器出现错误了。然而，可能会出现不寻常的消息，即这里没提及到，但仍然是与应用程序故障有关的。有更多可用的信息，所以完整阅读 crash dump 可以披露 crash 的原因。进程的大小， ETS表的数量， 以及每个Erlang进程栈的数据对找出所在问题都是有帮助的。</p>
+<h2 id="原子数"><a href="#原子数" class="headerlink" title="原子数"></a>原子数</h2><p>crash 时系统中的原子数显示为 <em>Atoms: <number></number></em> ，好大几W个原子数是完全正常的，但更多地可以表明 BIF  <em>erlang:list_to_atom/1</em> 用来动态生成不同的原子，它绝不是一个好方式。</p>
+<h1 id="调度器信息（Scheduler-Information）"><a href="#调度器信息（Scheduler-Information）" class="headerlink" title="调度器信息（Scheduler Information）"></a>调度器信息（Scheduler Information）</h1><p>在标签 <em>=scheduler</em> 下面，显示了有关运行时系统中调度顺的当前统计的信息。在操作系统中允许暂停其他线程，在本节中的数据反映了当发生 crash 时运行时系统的状态。</p>
+<p>进程可以存在以下字段：</p>
+<h2 id="scheduler-id"><a href="#scheduler-id" class="headerlink" title="=scheduler:id"></a>=scheduler:id</h2><p>标题。说明调度器的ID</p>
+<h2 id="Scheduler-Sleep-Info-Flags"><a href="#Scheduler-Sleep-Info-Flags" class="headerlink" title="Scheduler Sleep Info Flags"></a>Scheduler Sleep Info Flags</h2><p>如果为空，表示调度器正在工作中。</p>
+<p>如果非空，则调度器正处于某种状态中： <em>sleep</em> 、 <em>suspended</em> 。</p>
+<p>该条仅出现在基于 <em>SMP</em> 模拟器中。</p>
+<h2 id="Scheduler-Sleep-Info-Aux-Work"><a href="#Scheduler-Sleep-Info-Aux-Work" class="headerlink" title="Scheduler Sleep Info Aux Work"></a>Scheduler Sleep Info Aux Work</h2><p>如果不为空，则调度器内部的辅助工作已经调度完成。</p>
+<h2 id="Current-Port"><a href="#Current-Port" class="headerlink" title="Current Port"></a>Current Port</h2><p>当前由调度器执行的 port 的 port 标识符。（译注：Port 在Erlang中与普通理解的 Port 并不太一样。它是一种 Erlang 与外部程序通信的方式之一）</p>
+<h2 id="Current-Process"><a href="#Current-Process" class="headerlink" title="Current Process"></a>Current Process</h2><p>由当前调度器执行的进程的进程标识符。如果有这样的一个进程，这个条目下面就跟着有：<em>State</em> ， <em>Internal State</em> ， <em>Program Counter</em> 以及 <em>CP</em> 。这些项是描述了 <a href="#processes">进程信息部分</a></p>
+<p>注意，这些是当 crash dump 开始生成时的一个快照。因此，它们很可能与在 <em>= proc</em> 部分找到的同样进程的条目不太相同（并说明更多）。如果当前没有运行的进程，则仅显示 <em>Current Process</em> </p>
+<h2 id="Current-Process-Limited-Stack-Trace"><a href="#Current-Process-Limited-Stack-Trace" class="headerlink" title="Current Process Limited Stack Trace"></a>Current Process Limited Stack Trace</h2><p>本条目仅在有 <em>Current Process</em> 时显示。类似 <em>=proc_stack</em> ，除了仅显示函数帧（也就是说，省略了栈变量）。此外，仅显示栈的顶部和底部。如果栈足够小的话（ &lt; 512 个 slots ），则会完整显示。否则显示条目 <em>skipping ## slots</em> ， <em>##</em> 是被忽略的 slots 数量。</p>
+<h2 id="Run-Queue"><a href="#Run-Queue" class="headerlink" title="Run Queue"></a>Run Queue</h2><p>显示在此调度器上有多少个进程和不同调度优先级的 port 的统计信息</p>
+<h2 id="crashed"><a href="#crashed" class="headerlink" title="** crashed **"></a>** crashed **</h2><p>该条目通常是不会显示的。这意味着获取有关此调度器的其余信息由于某些原因而导致失败。</p>
+<h1 id="内存信息（Memory-Information）"><a href="#内存信息（Memory-Information）" class="headerlink" title="内存信息（Memory Information）"></a>内存信息（Memory Information）</h1><p>在标签 <em>=memory</em> 下面显示的信息类似于在一个存活的节点通过 <em>erlang:memory()</em> 获取的信息。</p>
+<h1 id="内部表信息（Internal-Table-Information）"><a href="#内部表信息（Internal-Table-Information）" class="headerlink" title="内部表信息（Internal Table Information）"></a>内部表信息（Internal Table Information）</h1><p>在标签 <em>=hash_table:<table_name></table_name></em> 和 <em>=index_table:<table_name></table_name></em> 下面显示了内部表的信息。这是运行时系统开发者最感兴趣的。</p>
+<h1 id="分配区域（Allocated-Areas）"><a href="#分配区域（Allocated-Areas）" class="headerlink" title="分配区域（Allocated Areas）"></a>分配区域（Allocated Areas）</h1><p>在标签 <em>=allocated_areas</em> 下面显示了在一个存活节点中通过 <a href="http://erlang.org/doc/man/erlang.html#system_info_allocated_areas" target="_blank" rel="external">erlang:system_info(allocated_areas).</a> 获取的信息类似。</p>
+<h1 id="分配器（Allocator）"><a href="#分配器（Allocator）" class="headerlink" title="分配器（Allocator）"></a>分配器（Allocator）</h1><p>在标签 <em>=allocator:<a></a></em> 下显示了各种关于分配器 <em><a></a></em> 的信息。这些信息类似于在一个存活的节点上通过 <a href="http://erlang.org/doc/man/erlang.html#system_info_allocator_tuple" target="_blank" rel="external">erlang:system_info({allocator, <a>}).</a> 获取的信息。更多信息，请参阅 <a href="http://erlang.org/doc/man/erts_alloc.html" target="_blank" rel="external">erts_alloc(3)</a></a></p>
+<h1 id="进程信息（Process-Information）"><a href="#进程信息（Process-Information）" class="headerlink" title="进程信息（Process Information）"></a>进程信息（Process Information）</h1><p>Erlang crashdump 包含了每个存活在 Erlang 系统的进程列表。以下字段可以存在于一个进程中：</p>
+<h2 id="proc"><a href="#proc" class="headerlink" title="=proc:"></a>=proc:<pid></pid></h2><p>标题。指示进程的 ID</p>
+<h2 id="State"><a href="#State" class="headerlink" title="State"></a>State</h2><p>进程的状态。可以是以下中的一个:</p>
+<h3 id="Scheduled"><a href="#Scheduled" class="headerlink" title="Scheduled"></a>Scheduled</h3><p>进程被调度去执行，但它当前并不在运行（“在 Run Queue 中”）</p>
+<h3 id="Waiting"><a href="#Waiting" class="headerlink" title="Waiting"></a>Waiting</h3><p>进程正等待某些东西（在接收）</p>
+<h3 id="Running"><a href="#Running" class="headerlink" title="Running"></a>Running</h3><p>进程正在运行。如果 BIF <em>erlang:halt/1</em> 被调用，就是该进程调用它的。</p>
+<h3 id="Exiting"><a href="#Exiting" class="headerlink" title="Exiting"></a>Exiting</h3><p>进程正在退出</p>
+<h3 id="Garbing"><a href="#Garbing" class="headerlink" title="Garbing"></a>Garbing</h3><p>这是不幸运的，当写 crash dump 时该进程正在被垃圾收集。该进程的其余信息就有限了。</p>
+<h3 id="Suspended"><a href="#Suspended" class="headerlink" title="Suspended"></a>Suspended</h3><p>进程在 suspended 中，可能是由 BIF <em>erlang:suspend_process/1</em> 调用或它尝试向一个繁忙的 port 写数据导致的。</p>
+<h2 id="Registered-name"><a href="#Registered-name" class="headerlink" title="Registered name"></a>Registered name</h2><p>该进程的注册名，如果有的话。</p>
+<h2 id="Spawned-as"><a href="#Spawned-as" class="headerlink" title="Spawned as"></a>Spawned as</h2><p>进程的入口点，即启动进程的 <em>spawn</em> 或 <em>spawn_link</em> 函数的引用。</p>
+<h2 id="Last-scheduled-in-for-Current-call"><a href="#Last-scheduled-in-for-Current-call" class="headerlink" title="Last scheduled in for | Current call"></a>Last scheduled in for | Current call</h2><p>当前进程的函数。该字段并不是总会存在的。</p>
+<h2 id="Spawned-by"><a href="#Spawned-by" class="headerlink" title="Spawned by"></a>Spawned by</h2><p>进程的父进程，即执行 <em>spawn</em> 或 <em>spawn_link</em> 的进程。</p>
+<h2 id="Started"><a href="#Started" class="headerlink" title="Started"></a>Started</h2><p>进程启动的日期和时间</p>
+<h2 id="Message-queue-length"><a href="#Message-queue-length" class="headerlink" title="Message queue length"></a>Message queue length</h2><p>进程消息队列的长度</p>
+<h2 id="Number-of-heap-fragments"><a href="#Number-of-heap-fragments" class="headerlink" title="Number of heap fragments"></a>Number of heap fragments</h2><p>已分配的堆帧数</p>
+<h2 id="Heap-fragment-data"><a href="#Heap-fragment-data" class="headerlink" title="Heap fragment data"></a>Heap fragment data</h2><p>堆帧数据大小。该数据是由发送到该进程的消息或者由 Erlang BIFs 创建的。这个数量取决于该字段完全不感兴趣的事情数。</p>
+<h2 id="Link-list"><a href="#Link-list" class="headerlink" title="Link list"></a>Link list</h2><p>与此进程相关联的进程ID列表。也可包含 ports 。如果进程用作监视的话，该字段还会告知有效的直接监控。也就是说，一个连到进程的连接，它告诉你 <em>当前</em> 进程正监控其他进程（译注：即 P1 -&gt; P2，这表示P2正监控P1）。一个从进程中的连接，它告诉你其他的进程正监控着当前的进程。（译注：P1 &lt;- P2 ，表示P1正在监控P2）</p>
+<h2 id="Reductions"><a href="#Reductions" class="headerlink" title="Reductions"></a>Reductions</h2><p>进程消耗的减少量。</p>
+<blockquote>
+<p>译注：该字段不是很理解。。</p>
+</blockquote>
+<h2 id="Stack-heap"><a href="#Stack-heap" class="headerlink" title="Stack+heap"></a>Stack+heap</h2><p>栈和堆的大小（它们共享内存段）</p>
+<h2 id="OldHeap"><a href="#OldHeap" class="headerlink" title="OldHeap"></a>OldHeap</h2><p><em>old heap</em> 的大小。Erlang虚拟机使用2代的分代垃圾收集器。有一个用于新数据项的堆，另一个用于两个垃圾收集后还存活的数据。这个假设（这几乎总是正确的）是，两个垃圾收集还存活的数据可以 <em>升级</em> 到一个更少垃圾收集的堆中，因为它们将存活比较长的一段时间。这是虚拟机中常见的技术。堆和栈一起的总和构成了进程的绝大部分分配的内存。</p>
+<h2 id="Heap-unused-OldHeap-unused"><a href="#Heap-unused-OldHeap-unused" class="headerlink" title="Heap unused, OldHeap unused"></a>Heap unused, OldHeap unused</h2><p>每个堆上未使用的内存量。它通常是无用的。</p>
+<h2 id="Memory"><a href="#Memory" class="headerlink" title="Memory"></a>Memory</h2><p>该进程总使用内存量。它包括了调用栈、堆和内部结构。与 <a href="http://erlang.org/doc/man/erlang.html#process_info-2" target="_blank" rel="external">erlang:process_info(Pid,memory)</a> 相同。</p>
+<h2 id="Program-counter"><a href="#Program-counter" class="headerlink" title="Program counter"></a>Program counter</h2><p>当前指令指针。仅运行时系统开发者感兴趣。它指向的函数是当前进程的函数。</p>
+<h2 id="CP"><a href="#CP" class="headerlink" title="CP"></a>CP</h2><p>Continuation Pointer，即当前调用的返回地址。对于非运行时系统开发者来说是无用的。可以跟踪 CP 指向的函数，即调用当前函数的函数。</p>
+<h2 id="Arity"><a href="#Arity" class="headerlink" title="Arity"></a>Arity</h2><p>实数参数的寄存器数量。如果有实参的话则紧接着参数寄存器。它可包含函数参数，如果它们还没有迁移到栈的话。</p>
+<h2 id="Internal-State"><a href="#Internal-State" class="headerlink" title="Internal State"></a>Internal State</h2><p>关于该进程的更多内部状态</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>参看 <a href="http://erlang.org/doc/apps/erts/crash_dump.html#proc_data" target="_blank" rel="external">process data</a></p>
+<h1 id="Port-信息"><a href="#Port-信息" class="headerlink" title="Port 信息"></a>Port 信息</h1><p>这部分列出了打开的 ports ，它们的拥有者，任何连接的进程，它们 driver 或外部进程的名字。</p>
+<h1 id="ETS-表"><a href="#ETS-表" class="headerlink" title="ETS 表"></a>ETS 表</h1><p>这部分包含了系统中的所有关于 ETS 表的信息。以下是每一张表的字段</p>
+<h2 id="ets"><a href="#ets" class="headerlink" title="=ets:"></a>=ets:<owner></owner></h2><p>标题。指明表的拥有者（一个进程ID）</p>
+<h2 id="Table"><a href="#Table" class="headerlink" title="Table"></a>Table</h2><p>表的ID。如果它是一个 <em>named_table</em> ，则是它的名字。</p>
+<h2 id="Name"><a href="#Name" class="headerlink" title="Name"></a>Name</h2><p>表名，不管它是否是一个 <em>named_table</em> </p>
+<h2 id="Hash-table-Buckets"><a href="#Hash-table-Buckets" class="headerlink" title="Hash table, Buckets"></a>Hash table, Buckets</h2><p>是否是一张 hash 表，即，它并不是一张 <em>ordered_set</em> 表</p>
+<h2 id="Hash-table-Chain-Length"><a href="#Hash-table-Chain-Length" class="headerlink" title="Hash table, Chain Length"></a>Hash table, Chain Length</h2><p>表是否是一张 hash 表。包含了关于表的统计信息，比如：最大、最小和平均链长度。具有比平均值大得多和远大于预期标准偏差的标准偏差，这表示由于某些原因，<em>terms</em> 的 hash 表现不好。</p>
+<h2 id="Ordered-set-AVL-tree-Elements"><a href="#Ordered-set-AVL-tree-Elements" class="headerlink" title="Ordered set (AVL tree), Elements"></a>Ordered set (AVL tree), Elements</h2><p>表是否是 <em>ordered_set</em> 。（元素的数量与表中的对象数相同）</p>
+<h2 id="Fixed"><a href="#Fixed" class="headerlink" title="Fixed"></a>Fixed</h2><p>表是否使用 <a href="http://erlang.org/doc/man/ets.html#safe_fixtable-2" target="_blank" rel="external">ets:safe_fixtable/2</a> 或一些内部机制修复了。</p>
+<h2 id="Objects"><a href="#Objects" class="headerlink" title="Objects"></a>Objects</h2><p>表中的对象数</p>
+<h2 id="Words"><a href="#Words" class="headerlink" title="Words"></a>Words</h2><p>表中数据被分配的字数（通常4字节为一字）</p>
+<h2 id="Type"><a href="#Type" class="headerlink" title="Type"></a>Type</h2><p>表的类型， <em>set</em> , <em>bag</em> , <em>dublicate_bag</em> 或 <em>ordered_set</em> </p>
+<h2 id="Compressed"><a href="#Compressed" class="headerlink" title="Compressed"></a>Compressed</h2><p>表是否压缩</p>
+<h2 id="Protection"><a href="#Protection" class="headerlink" title="Protection"></a>Protection</h2><p>表的 protection </p>
+<h2 id="Write-Concurrency"><a href="#Write-Concurrency" class="headerlink" title="Write Concurrency"></a>Write Concurrency</h2><p>表是否开启 <em>write_concurrency</em></p>
+<h2 id="Read-Concurrency"><a href="#Read-Concurrency" class="headerlink" title="Read Concurrency"></a>Read Concurrency</h2><p>表是否开启 <em>read_concurrency</em></p>
+<h1 id="计时器（Timers）"><a href="#计时器（Timers）" class="headerlink" title="计时器（Timers）"></a>计时器（Timers）</h1><p>这部分包含了所在关于以 <em>erlang:start_timer/3</em> 和 <em>erlang:send_after/3</em> 启动的计时器信息。以下是每个计时器的字段：</p>
+<h2 id="timer"><a href="#timer" class="headerlink" title="=timer:"></a>=timer:<owner></owner></h2><p>标题。指明 timer 的拥有者（一个进程ID），也就是说，进程接收消息时 timers 过期了。</p>
+<h2 id="Message"><a href="#Message" class="headerlink" title="Message"></a>Message</h2><p>被发送的消息</p>
+<h2 id="Time-left"><a href="#Time-left" class="headerlink" title="Time left"></a>Time left</h2><p>直到消息将被发送的剩余毫秒数（milliseconds left)</p>
+<h1 id="分布式信息（Distribution-Information）"><a href="#分布式信息（Distribution-Information）" class="headerlink" title="分布式信息（Distribution Information）"></a>分布式信息（Distribution Information）</h1><p>如果 Erlang 节点存活，即设置了与其他节点进行通信，这部分列出了活动的连接。可以存在以下字段：</p>
+<h2 id="node"><a href="#node" class="headerlink" title="=node:"></a>=node:<node_name></node_name></h2><p>节点名</p>
+<h2 id="no-distribution"><a href="#no-distribution" class="headerlink" title="no_distribution"></a>no_distribution</h2><p>节点是否并不是分布式的</p>
+<h2 id="visible-node"><a href="#visible-node" class="headerlink" title="=visible_node:"></a>=visible_node:<channel></channel></h2><p>可视节点的标题，即，一个存活节点连接到一个 crash 的节点。指明了节点的 channel 序号。</p>
+<h2 id="hidden-node"><a href="#hidden-node" class="headerlink" title="=hidden_node:"></a>=hidden_node:<channel></channel></h2><p>隐藏节点标题。隐藏节点与可视节点相同，除了它是以 <em>-hidden</em> 标识开头。指明了节点的 channel 序号。</p>
+<h2 id="not-connected"><a href="#not-connected" class="headerlink" title="=not_connected:"></a>=not_connected:<channel></channel></h2><p>早先连接到 crash 节点的节点标题。crash 时存在的未连接节点的引用（即，进程或 port 的标识符）。指明了节点的 channel 序号。</p>
+<h2 id="Name-1"><a href="#Name-1" class="headerlink" title="Name"></a>Name</h2><p>远程节点的名字</p>
+<h2 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h2><p>控制与远程节点通信的 port</p>
+<h2 id="Creation"><a href="#Creation" class="headerlink" title="Creation"></a>Creation</h2><p>与节点名标识符一起的一个整数（1-3）来标识特定的节点实例。</p>
+<h2 id="Remote-monitoring"><a href="#Remote-monitoring" class="headerlink" title="Remote monitoring:  "></a>Remote monitoring: <local_proc> <remote_proc></remote_proc></local_proc></h2><p>在 crash 时，正监控远程进程的本地进程</p>
+<h2 id="Remotely-monitored-by"><a href="#Remotely-monitored-by" class="headerlink" title="Remotely monitored by:  "></a>Remotely monitored by: <local_proc> <remote_proc></remote_proc></local_proc></h2><p>在 crash 时，正在监控本地进程的远程进程</p>
+<h2 id="Remote-link"><a href="#Remote-link" class="headerlink" title="Remote link:  "></a>Remote link: <local_proc> <remote_proc></remote_proc></local_proc></h2><p>在 crash 时，存在于本地进程和远程节点的链接。</p>
+<h1 id="已加载模块的信息（Loaded-Module-Information）"><a href="#已加载模块的信息（Loaded-Module-Information）" class="headerlink" title="已加载模块的信息（Loaded Module Information）"></a>已加载模块的信息（Loaded Module Information）</h1><p>这部分包含了关于所有已加载模块的信息</p>
+<p>首先是已加载代码的占用内存总述：</p>
+<ul>
+<li>Current code ： 模块的当前最新版本的代码</li>
+<li>Old code : 在系统中存在更新版本的代码，但旧版本还没有被清除的代码</li>
+</ul>
+<p>内存占用是以字节为单位的。然后会列出所有已加载的模块。会出现以下字段：</p>
+<h2 id="mod"><a href="#mod" class="headerlink" title="=mod:"></a>=mod:<module_name></module_name></h2><p>标题。指明模块名</p>
+<h2 id="Current-size"><a href="#Current-size" class="headerlink" title="Current size"></a>Current size</h2><p>已加载代码的内存占用，单位字节</p>
+<h2 id="Old-size"><a href="#Old-size" class="headerlink" title="Old size"></a>Old size</h2><p>旧代码的内存占用，单位字节</p>
+<h2 id="Current-attributes"><a href="#Current-attributes" class="headerlink" title="Current attributes"></a>Current attributes</h2><p>当前代码的模块属性。该字段会在使用 Crashdump Viewer 工具时被解码。</p>
+<h2 id="Old-attributes"><a href="#Old-attributes" class="headerlink" title="Old attributes"></a>Old attributes</h2><p>旧代码的模块属性，如果有的话。该字段会在使用 Crashdump Viewer 工具时被解码。</p>
+<h2 id="Current-compilation-info"><a href="#Current-compilation-info" class="headerlink" title="Current compilation info"></a>Current compilation info</h2><p>当前代码的编译信息（选项）。该字段会在使用 Crashdump Viewer 工具时被解码。</p>
+<h2 id="Old-compilation-info"><a href="#Old-compilation-info" class="headerlink" title="Old compilation info"></a>Old compilation info</h2><p>旧代码的编译信息（选项），如果有的话。该字段会在使用 Crashdump Viewer 工具时被解码。</p>
+<h1 id="Fun-信息"><a href="#Fun-信息" class="headerlink" title="Fun 信息"></a>Fun 信息</h1><p>该部分列出所有 funs 。以下字段可出现在每一个 fun 中。</p>
+<h2 id="fun"><a href="#fun" class="headerlink" title="=fun"></a>=fun</h2><p>标题</p>
+<h2 id="Module"><a href="#Module" class="headerlink" title="Module"></a>Module</h2><p>fun 定义所在的模块名</p>
+<h2 id="Uniq-Index"><a href="#Uniq-Index" class="headerlink" title="Uniq, Index"></a>Uniq, Index</h2><p>标识符</p>
+<h2 id="Address"><a href="#Address" class="headerlink" title="Address"></a>Address</h2><p>fun 代码的地址</p>
+<h2 id="Native-address"><a href="#Native-address" class="headerlink" title="Native_address"></a>Native_address</h2><p>当开启 <em>HiPE</em> 时, fun 代码的本地代码地址</p>
+<h2 id="Refc"><a href="#Refc" class="headerlink" title="Refc"></a>Refc</h2><p>引用 fun 的引用数</p>
+<h1 id="进程数据（Process-Data）"><a href="#进程数据（Process-Data）" class="headerlink" title="进程数据（Process Data）"></a>进程数据（Process Data）</h1><p>对于每一个进程，至少有一个 <em>=proc_stack</em> 和一个 <em>=proc_heap</em> 标签，后接着的是进程的栈和堆的原始内存信息</p>
+<p>对于每一个进程，如果进程的消息队列不为空的话，还会有一个 <em>=proc_messages</em> 标签，如果进程的 dictionary （即 <em>put/2</em> 和 <em>get/1</em> 所做的事）不为空的话，还有一个 <em>proc_dictionary</em> 标签。</p>
+<p>原始内存信息可以在使用 Crashdump Viewer 工具时被解码。然后你可以看到栈的dump，消息队列（如果有话），以及 dictionary （如果有话）</p>
+<p>栈 dump 是Erlang进程的dump 。大多存活的数据（即，当前使用的变量）会放到栈上；因此可能比较感兴趣。人们可以猜测它是什么，但作为信息来说是符号来的，完整阅读这些信息可能是有用的。例如，我们可以在下面的例子的第5，和第6行中找出 Erlang 基本加载器的变量状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">(1)  3cac44   Return addr 0x13BF58 (&lt;terminate process normally&gt;)</div><div class="line">(2)  y(0)     [<span class="string">"/view/siri_r10_dev/clearcase/otp/erts/lib/kernel/ebin"</span>,</div><div class="line">(3)            <span class="string">"/view/siri_r10_dev/clearcase/otp/erts/lib/stdlib/ebin"</span>]</div><div class="line">(4)  y(1)     &lt;0.1.0&gt;</div><div class="line">(5)  y(2)     &#123;state,[],none,<span class="comment">#Fun&lt;erl_prim_loader.6.7085890&gt;,undefined,#Fun&lt;erl_prim_loader.7.9000327&gt;,</span></div><div class="line">(6)            <span class="comment">#Fun&lt;erl_prim_loader.8.116480692&gt;,#Port&lt;0.2&gt;,infinity,#Fun&lt;erl_prim_loader.9.10708760&gt;&#125;</span></div><div class="line">(7)  y(3)     infinity</div></pre></td></tr></table></figure>
+<p>当为进程解释这些数据时，有助于知道匿名函数对象（funs) 是给出以下：</p>
+<ul>
+<li>创建它们的函数的名字的名称构造</li>
+<li>一个数字（从0开始），表示该函数中的 fun 个数。</li>
+</ul>
+<h1 id="原子（Atoms）"><a href="#原子（Atoms）" class="headerlink" title="原子（Atoms）"></a>原子（Atoms）</h1><p>本节介绍系统中所有的原子。这仅是那些怀疑动态生成原子会是个问题的人感兴趣的部分，否则，这一节可以忽略。</p>
+<p>请注意，最后创建的原子反而是最先显示的。</p>
+<h1 id="免责声明（Disclaimer）"><a href="#免责声明（Disclaimer）" class="headerlink" title="免责声明（Disclaimer）"></a>免责声明（Disclaimer）</h1><p>crash dump 文件格式会在 OTP 版本之间演变。此处描述的某些信息可能并不适用于你的版本。这样的描述永不会完整；这意味着，对于 crash dump 的解释是一般的，以及对尝试查找应用程序错误是有帮助的，而不是完整的规范。</p>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

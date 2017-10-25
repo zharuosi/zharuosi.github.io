@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>[翻译]RabbitMQ中 immediate 和 mandatory 的用法 | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="翻译,rabbitmq," />
+  
+
+  <meta name="description" content="原文 immediate 和 mandatory 字段是 AMQP 规范的一部分，并且还包含在 RabbitMQ FAQ 中指出实现者如何解释它们的含义的。 Mandatory 如果消息无法路由到队列，则此标志告诉服务器如何执行。具体来说，如果设置了 mandatory 并且运行绑定消息后（译注：即进行消息路由）放到0个队列中，则该消息返回给发送者（通过 basic.return ）。如果在相同情">
+<meta name="keywords" content="翻译,rabbitmq">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[翻译]RabbitMQ中 immediate 和 mandatory 的用法">
+<meta property="og:url" content="https://emacsist.github.io/2017/05/11/翻译-RabbitMQ中-immediate-和-mandatory-的用法/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="原文 immediate 和 mandatory 字段是 AMQP 规范的一部分，并且还包含在 RabbitMQ FAQ 中指出实现者如何解释它们的含义的。 Mandatory 如果消息无法路由到队列，则此标志告诉服务器如何执行。具体来说，如果设置了 mandatory 并且运行绑定消息后（译注：即进行消息路由）放到0个队列中，则该消息返回给发送者（通过 basic.return ）。如果在相同情">
+<meta property="og:updated_time" content="2017-05-11T13:35:01.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[翻译]RabbitMQ中 immediate 和 mandatory 的用法">
+<meta name="twitter:description" content="原文 immediate 和 mandatory 字段是 AMQP 规范的一部分，并且还包含在 RabbitMQ FAQ 中指出实现者如何解释它们的含义的。 Mandatory 如果消息无法路由到队列，则此标志告诉服务器如何执行。具体来说，如果设置了 mandatory 并且运行绑定消息后（译注：即进行消息路由）放到0个队列中，则该消息返回给发送者（通过 basic.return ）。如果在相同情">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Mandatory"><span class="toc-text">Mandatory</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#immediate"><span class="toc-text">immediate</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-翻译-RabbitMQ中-immediate-和-mandatory-的用法" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            [翻译]RabbitMQ中 immediate 和 mandatory 的用法
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.05.11</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#rabbitmq">
+        <span class="tag-name">rabbitmq</span>
+    <span class="tag-size">( 19 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#翻译">
+        <span class="tag-name">翻译</span>
+    <span class="tag-size">( 23 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <p><a href="http://stackoverflow.com/questions/6386117/rabbitmq-use-of-immediate-and-mandatory-bits" target="_blank" rel="external">原文</a></p>
+<p><em>immediate</em> 和 <em>mandatory</em> 字段是 AMQP 规范的一部分，并且还包含在 RabbitMQ FAQ 中指出实现者如何解释它们的含义的。</p>
+<h1 id="Mandatory"><a href="#Mandatory" class="headerlink" title="Mandatory"></a><a href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.publish.mandatory" target="_blank" rel="external">Mandatory</a></h1><blockquote>
+<p>如果消息无法路由到队列，则此标志告诉服务器如何执行。具体来说，如果设置了 <em>mandatory</em> 并且运行绑定消息后（译注：即进行消息路由）放到0个队列中，则该消息返回给发送者（通过 <em>basic.return</em> ）。如果在相同情况下但没有设置 <em>mandatory</em> ，则服务器会静默地删除该消息。</p>
+</blockquote>
+<p>或者用我的话说：把这条消息放到至少一个队列上，如果你无法做到，那就将它返回给我。</p>
+<h1 id="immediate"><a href="#immediate" class="headerlink" title="immediate"></a><a href="http://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.publish.mandatory" target="_blank" rel="external">immediate</a></h1><blockquote>
+<p>对于发布一条带有 <em>immediate</em> 的消息，如果匹配的队列中已经准备好了消费者，则将消息路由到其中一个队列中。如果消费者刚在 ack 接收信息之前崩溃了，则该消息将被重新进队 和/或 分发到其他该队列上的消费者（如果没有崩溃，那么消息被确认，并且按照正常情况进行）。但是，如果匹配的队列中具有 0 个就绪消费者，那么该消息在随后的队列分发中不会重新进队。只有当所有匹配的队列中都没有就绪的消费者时才会将消息返回给发送者（通过 <em>basic.return</em> ）</p>
+</blockquote>
+<p>或者用我的话说：“如果至少有一个消费者连接到我的队列，并且该消费者现在就可以消费这条消息，则立即分发这条消息给它们。如果没有消费者连接到我的队列，那么我的消息延迟消费是毫无意义的，然后消费者就会一直看不到它。They snooze, they lose.”</p>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

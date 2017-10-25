@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>I/O模型知识收集整理 | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="IO模型," />
+  
+
+  <meta name="description" content="同步、异步 与 阻塞、非阻塞What’s the differences between blocking with synchronous, nonblocking and asynchronous? stackoverflow 里的是线程的同步与阻塞，我翻译了一下:  阻塞的意思可能与同步相同，也可能是不同，这取决于上下文。当我们谈论方法调用时，一个同步的调用，也可以称为阻塞的（在稍候将返回）">
+<meta name="keywords" content="IO模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="I&#x2F;O模型知识收集整理">
+<meta property="og:url" content="https://emacsist.github.io/2017/06/23/I-O模型知识收集整理/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="同步、异步 与 阻塞、非阻塞What’s the differences between blocking with synchronous, nonblocking and asynchronous? stackoverflow 里的是线程的同步与阻塞，我翻译了一下:  阻塞的意思可能与同步相同，也可能是不同，这取决于上下文。当我们谈论方法调用时，一个同步的调用，也可以称为阻塞的（在稍候将返回）">
+<meta property="og:updated_time" content="2017-06-26T05:56:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="I&#x2F;O模型知识收集整理">
+<meta name="twitter:description" content="同步、异步 与 阻塞、非阻塞What’s the differences between blocking with synchronous, nonblocking and asynchronous? stackoverflow 里的是线程的同步与阻塞，我翻译了一下:  阻塞的意思可能与同步相同，也可能是不同，这取决于上下文。当我们谈论方法调用时，一个同步的调用，也可以称为阻塞的（在稍候将返回）">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#同步、异步-与-阻塞、非阻塞"><span class="toc-text">同步、异步 与 阻塞、非阻塞</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#I-O-模型"><span class="toc-text">I/O 模型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#单线程阻塞"><span class="toc-text">单线程阻塞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#多线程阻塞"><span class="toc-text">多线程阻塞</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-I-O模型知识收集整理" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            I/O模型知识收集整理
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.06.23</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#IO模型">
+        <span class="tag-name">IO模型</span>
+    <span class="tag-size">( 1 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <h1 id="同步、异步-与-阻塞、非阻塞"><a href="#同步、异步-与-阻塞、非阻塞" class="headerlink" title="同步、异步 与 阻塞、非阻塞"></a>同步、异步 与 阻塞、非阻塞</h1><p><a href="https://stackoverflow.com/questions/8416874/whats-the-differences-between-blocking-with-synchronous-nonblocking-and-asynch" target="_blank" rel="external">What’s the differences between blocking with synchronous, nonblocking and asynchronous?</a></p>
+<p>stackoverflow 里的是线程的同步与阻塞，我翻译了一下:</p>
+<blockquote>
+<p>阻塞的意思可能与同步相同，也可能是不同，这取决于上下文。当我们谈论方法调用时，一个同步的调用，也可以称为阻塞的（在稍候将返回），因为线程调用方法时不能继续向前了，直到方法返回。反义词就是，在这种情况下可以是异步的。</p>
+<p>在 锁 的术语中，如果等待获取的线程被处于挂起模式，直到锁可用（或者超时），这种情况下，锁就称为阻塞。这种情况下的反义词是非阻塞锁，这意味着线程即使无法获得锁也会立即返回。这可以用于实现所谓的自旋锁，你可以保持线程处于活动状态的同时轮询锁的状态。</p>
+<p>说到这里，你可以推断出这些概念间的区别了：同步通常意味着一个活动在线程向前移动之前，必须等待回复。 阻塞是指：线程处于等待状态（通常意味着它不会被调度执行，直到发生某些事件为止）。从这里可以得出结论：同步调用可能涉及阻塞行为，也可能不依赖于底层实现（即它也可能是在自旋，这意味着你正在使用异步调用模拟同步行为）</p>
+</blockquote>
+<p>这时引用知乎上面的一个 <a href="https://www.zhihu.com/question/19732473/answer/23434554" target="_blank" rel="external">回答</a> 可以参考一下。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">老张爱喝茶，废话不说，煮开水。出场人物：老张，水壶两把（普通水壶，简称水壶；会响的水壶，简称响水壶）。</div><div class="line"></div><div class="line">1 老张把水壶放到火上，立等水开。（同步阻塞）老张觉得自己有点傻</div><div class="line">2 老张把水壶放到火上，去客厅看电视，时不时去厨房看看水开没有。（同步非阻塞）</div><div class="line"></div><div class="line">老张还是觉得自己有点傻，于是变高端了，买了把会响笛的那种水壶。水开之后，能大声发出嘀~~~~的噪音。</div><div class="line"></div><div class="line">3 老张把响水壶放到火上，立等水开。（异步阻塞）老张觉得这样傻等意义不大</div><div class="line">4 老张把响水壶放到火上，去客厅看电视，水壶响之前不再去看它了，响了再去拿壶。（异步非阻塞）老张觉得自己聪明了。</div><div class="line"></div><div class="line">所谓同步异步，只是对于水壶而言。普通水壶，同步；响水壶，异步。虽然都能干活，但响水壶可以在自己完工之后，提示老张水开了。这是普通水壶所不能及的。同步只能让调用者去轮询自己（情况2中），造成老张效率的低下。</div><div class="line"></div><div class="line">所谓阻塞非阻塞，仅仅对于老张而言。立等的老张，阻塞；看电视的老张，非阻塞。</div><div class="line"></div><div class="line">情况1和情况3中老张就是阻塞的，媳妇喊他都不知道。虽然3中响水壶是异步的，可对于立等的老张没有太大的意义。</div><div class="line"></div><div class="line">所以一般异步是配合非阻塞使用的，这样才能发挥异步的效用。</div><div class="line"></div><div class="line">——来源网络，作者不明。</div><div class="line"></div><div class="line">作者：愚抄</div><div class="line">链接：https://www.zhihu.com/question/19732473/answer/23434554</div><div class="line">来源：知乎</div><div class="line">著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</div></pre></td></tr></table></figure>
+<p>这样子理解就清楚好多了。我觉得一个人能用普通人都能理解的思维来表达知识的，一定是对知识掌握得非常透彻的，哈哈。</p>
+<h1 id="I-O-模型"><a href="#I-O-模型" class="headerlink" title="I/O 模型"></a>I/O 模型</h1><h2 id="单线程阻塞"><a href="#单线程阻塞" class="headerlink" title="单线程阻塞"></a>单线程阻塞</h2><h2 id="多线程阻塞"><a href="#多线程阻塞" class="headerlink" title="多线程阻塞"></a>多线程阻塞</h2><p>## </p>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

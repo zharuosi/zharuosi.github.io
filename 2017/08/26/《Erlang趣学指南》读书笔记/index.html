@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>《Erlang趣学指南》读书笔记 | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Golang, Java, PostgreSQL, Postgres, MySQL, emacsist, RabbitMQ, Go, emacs, orgmode" />
+  
+
+  <meta name="description" content="第一章查找帮助1erl -man 模块名 变量名Erlang 中，变量名不能以小写字符开头。 原子原子是字面量，这意味着原子是常量，唯一的值就是自己的名字。换句话说，你看到的，就是你能得到的——别想太多。 写法：  以小写字母开头 如果原子不以小写字母开头或者其中包含有除字母、数字、下划线、以及@符号 之外 的其他字符，那么必须被放到两个单引号 (‘’) 之间。  注意千万不要动态生成原子！！！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Erlang趣学指南》读书笔记">
+<meta property="og:url" content="https://emacsist.github.io/2017/08/26/《Erlang趣学指南》读书笔记/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="第一章查找帮助1erl -man 模块名 变量名Erlang 中，变量名不能以小写字符开头。 原子原子是字面量，这意味着原子是常量，唯一的值就是自己的名字。换句话说，你看到的，就是你能得到的——别想太多。 写法：  以小写字母开头 如果原子不以小写字母开头或者其中包含有除字母、数字、下划线、以及@符号 之外 的其他字符，那么必须被放到两个单引号 (‘’) 之间。  注意千万不要动态生成原子！！！">
+<meta property="og:updated_time" content="2017-08-28T09:23:03.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《Erlang趣学指南》读书笔记">
+<meta name="twitter:description" content="第一章查找帮助1erl -man 模块名 变量名Erlang 中，变量名不能以小写字符开头。 原子原子是字面量，这意味着原子是常量，唯一的值就是自己的名字。换句话说，你看到的，就是你能得到的——别想太多。 写法：  以小写字母开头 如果原子不以小写字母开头或者其中包含有除字母、数字、下划线、以及@符号 之外 的其他字符，那么必须被放到两个单引号 (‘’) 之间。  注意千万不要动态生成原子！！！">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#第一章"><span class="toc-text">第一章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#查找帮助"><span class="toc-text">查找帮助</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#变量名"><span class="toc-text">变量名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原子"><span class="toc-text">原子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#注意"><span class="toc-text">注意</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#非短路布尔操作符-and-和-or"><span class="toc-text">非短路布尔操作符 and 和 or</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#短路布尔操作符-andalso-和-orelse"><span class="toc-text">短路布尔操作符 andalso 和 orelse</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#比较"><span class="toc-text">比较</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#精确"><span class="toc-text">精确</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#非精确"><span class="toc-text">非精确</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#小于等于"><span class="toc-text">小于等于</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#不同类型比较"><span class="toc-text">不同类型比较</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#元组"><span class="toc-text">元组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#带标记的元组"><span class="toc-text">带标记的元组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#列表"><span class="toc-text">列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#注意-1"><span class="toc-text">注意</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#，–"><span class="toc-text">++，–</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#hd-tl"><span class="toc-text">hd, tl</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#列表模式匹配"><span class="toc-text">列表模式匹配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cons-操作符"><span class="toc-text">cons 操作符 |</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#非良构列表-improper-list"><span class="toc-text">非良构列表 improper list</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#良构列表"><span class="toc-text">良构列表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#列表推导式-list-comprehension"><span class="toc-text">列表推导式 list comprehension</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#位语法"><span class="toc-text">位语法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二进制字符串"><span class="toc-text">二进制字符串</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二进制推导式"><span class="toc-text">二进制推导式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Erlang-适用和不适用的场景"><span class="toc-text">Erlang 适用和不适用的场景</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第二章"><span class="toc-text">第二章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#模块"><span class="toc-text">模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数"><span class="toc-text">函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注释"><span class="toc-text">注释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#宏"><span class="toc-text">宏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#元数据"><span class="toc-text">元数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注意-2"><span class="toc-text">注意</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第三章"><span class="toc-text">第三章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#模式匹配"><span class="toc-text">模式匹配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#绑定变量和自由变量"><span class="toc-text">绑定变量和自由变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#卫语句-guard"><span class="toc-text">卫语句 guard</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#if-表达式"><span class="toc-text">if 表达式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#case-…-of-表达式"><span class="toc-text">case … of 表达式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第四章"><span class="toc-text">第四章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#类型"><span class="toc-text">类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#类型转换"><span class="toc-text">类型转换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#检测数据类型"><span class="toc-text">检测数据类型</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第五章"><span class="toc-text">第五章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#递归"><span class="toc-text">递归</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#尾递归"><span class="toc-text">尾递归</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第六章"><span class="toc-text">第六章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#高阶函数"><span class="toc-text">高阶函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#匿名函数和闭包"><span class="toc-text">匿名函数和闭包</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第七章"><span class="toc-text">第七章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#错误"><span class="toc-text">错误</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#异常"><span class="toc-text">异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#处理异常"><span class="toc-text">处理异常</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第八章"><span class="toc-text">第八章</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第九章"><span class="toc-text">第九章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#记录-record"><span class="toc-text">记录 record</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#K-V-存储"><span class="toc-text">K-V 存储</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#属性列表-proplists"><span class="toc-text">属性列表 proplists:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#有序字典-orddict"><span class="toc-text">有序字典 orddict:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字典-dict-和通用平衡树-gb-trees-（大量数据存储）"><span class="toc-text">字典(dict:)和通用平衡树(gb_trees:)（大量数据存储）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#集合"><span class="toc-text">集合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有向图"><span class="toc-text">有向图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#队列"><span class="toc-text">队列</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第十章"><span class="toc-text">第十章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#创建进程"><span class="toc-text">创建进程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#发送消息"><span class="toc-text">发送消息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#接收消息"><span class="toc-text">接收消息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第十一章"><span class="toc-text">第十一章</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第十二章"><span class="toc-text">第十二章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#链接-link"><span class="toc-text">链接 link</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#捕获退出信息"><span class="toc-text">捕获退出信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#监控器-monitor"><span class="toc-text">监控器 monitor</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#命名进程"><span class="toc-text">命名进程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第十三章"><span class="toc-text">第十三章</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第十四章"><span class="toc-text">第十四章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#init-函数"><span class="toc-text">init 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handle-call-函数"><span class="toc-text">handle_call 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handle-cast-函数"><span class="toc-text">handle_cast 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handle-info-函数"><span class="toc-text">handle_info 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#terminate-函数"><span class="toc-text">terminate 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#code-change-函数"><span class="toc-text">code_change 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gen-server-实践"><span class="toc-text">gen_server 实践</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第十五章"><span class="toc-text">第十五章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#init-函数-1"><span class="toc-text">init 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#StateName-函数"><span class="toc-text">StateName 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handle-event-函数"><span class="toc-text">handle_event 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handle-syn-event-函数"><span class="toc-text">handle_syn_event 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#code-change-和-terminate-函数"><span class="toc-text">code_change 和 terminate 函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第十六章"><span class="toc-text">第十六章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#init-和-terminate-函数"><span class="toc-text">init 和 terminate 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handle-event-函数-1"><span class="toc-text">handle_event 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handle-call-函数-1"><span class="toc-text">handle_call 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handle-info-函数-1"><span class="toc-text">handle_info 函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#code-change-函数-1"><span class="toc-text">code_change 函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第十七章"><span class="toc-text">第十七章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#使用监督者"><span class="toc-text">使用监督者</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#重启策略-RestartStrategy"><span class="toc-text">重启策略 RestartStrategy</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MaxRestart-和-MaxTime"><span class="toc-text">MaxRestart 和 MaxTime</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ChildSpec-说明"><span class="toc-text">ChildSpec 说明</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第十八章"><span class="toc-text">第十八章</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#第十九章"><span class="toc-text">第十九章</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#OTP-应用结构"><span class="toc-text">OTP 应用结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#应用资源文件"><span class="toc-text">应用资源文件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#属性子集"><span class="toc-text">属性子集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#启动应用"><span class="toc-text">启动应用</span></a></li></ol></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-《Erlang趣学指南》读书笔记" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            《Erlang趣学指南》读书笔记
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.08.26</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <h1 id="第一章"><a href="#第一章" class="headerlink" title="第一章"></a>第一章</h1><h2 id="查找帮助"><a href="#查找帮助" class="headerlink" title="查找帮助"></a>查找帮助</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">erl -man 模块名</div></pre></td></tr></table></figure>
+<h2 id="变量名"><a href="#变量名" class="headerlink" title="变量名"></a>变量名</h2><p>Erlang 中，变量名不能以小写字符开头。</p>
+<h2 id="原子"><a href="#原子" class="headerlink" title="原子"></a>原子</h2><p>原子是字面量，这意味着原子是常量，唯一的值就是自己的名字。换句话说，你看到的，就是你能得到的——别想太多。</p>
+<p>写法：</p>
+<ol>
+<li>以小写字母开头</li>
+<li>如果原子不以小写字母开头或者其中包含有除字母、数字、下划线、以及@符号 <em>之外</em> 的其他字符，那么必须被放到两个单引号 (‘’) 之间。</li>
+</ol>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>千万不要动态生成原子！！！</p>
+<p>因为原子表不被垃圾回收，所以原子会一直累积，直到系统因为内存耗尽或者创建的原子数超过了 1048577 而发生崩溃。</p>
+<p>有些原子是保留字，这些原子不能使用。</p>
+<h2 id="非短路布尔操作符-and-和-or"><a href="#非短路布尔操作符-and-和-or" class="headerlink" title="非短路布尔操作符 and 和 or"></a>非短路布尔操作符 and 和 or</h2><p>注意：</p>
+<blockquote>
+<p>这两个操作符，会对两边的参数都会去求值。</p>
+</blockquote>
+<h2 id="短路布尔操作符-andalso-和-orelse"><a href="#短路布尔操作符-andalso-和-orelse" class="headerlink" title="短路布尔操作符 andalso 和 orelse"></a>短路布尔操作符 andalso 和 orelse</h2><h2 id="比较"><a href="#比较" class="headerlink" title="比较"></a>比较</h2><h3 id="精确"><a href="#精确" class="headerlink" title="精确"></a>精确</h3><p><em>=:=</em> : 精确相等性比较 （严格区分浮点数和整数）<br><em>=/=</em> : 精确不等性比较 （严格区分浮点数和整数）</p>
+<h3 id="非精确"><a href="#非精确" class="headerlink" title="非精确"></a>非精确</h3><p><em>==</em> : 非精确相等性比较（非严格区分浮点数和整数）<br><em>/=</em> : 非精确不等性比较（非严格区分浮点数和整数）</p>
+<h3 id="小于等于"><a href="#小于等于" class="headerlink" title="小于等于"></a>小于等于</h3><p><em>=&lt;</em> ：注意，它与其他编程语言是不一样的！！！</p>
+<h3 id="不同类型比较"><a href="#不同类型比较" class="headerlink" title="不同类型比较"></a>不同类型比较</h3><p>Erlang 语言的发明者把实用性的优先级排在理论前面，觉得如果能简单地写出像排序算法那样的程序，可以对任意数据排序，岂不是很棒！做出这个决定是为了简化编程工作！</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">number &lt; atom &lt; reference &lt; fun &lt; port &lt; pid &lt; tuple &lt; list &lt; bit string</div></pre></td></tr></table></figure>
+<p>Erlang 语言发明者之一 Joe Armstrong 说过：具体的顺序不重要，重要是定义明确的全局顺序。</p>
+<h2 id="元组"><a href="#元组" class="headerlink" title="元组"></a>元组</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;E1, E2, E3&#125;</div></pre></td></tr></table></figure>
+<h3 id="带标记的元组"><a href="#带标记的元组" class="headerlink" title="带标记的元组"></a>带标记的元组</h3><p>如果一个元组中包含一个原子，原子后面只跟着一个元素，那么这样子的元组就称为带标记的元组。</p>
+<h2 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[E1, E2, E3]</div></pre></td></tr></table></figure>
+<h3 id="注意-1"><a href="#注意-1" class="headerlink" title="注意"></a>注意</h3><p>在 Erlang 中，字符串就是列表！！！</p>
+<h3 id="，–"><a href="#，–" class="headerlink" title="++，–"></a>++，–</h3><p>它们都是 <em>右结合</em> 的操作符。即操作是从右向左进行的！！</p>
+<h3 id="hd-tl"><a href="#hd-tl" class="headerlink" title="hd, tl"></a>hd, tl</h3><p>hd: 获取列表的第一个元素<br>tl: 获取列表除第一个元素外的所有元素</p>
+<h3 id="列表模式匹配"><a href="#列表模式匹配" class="headerlink" title="列表模式匹配"></a>列表模式匹配</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[Head | Tail]</div></pre></td></tr></table></figure>
+<h3 id="cons-操作符"><a href="#cons-操作符" class="headerlink" title="cons 操作符 |"></a>cons 操作符 |</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[Term1 | [Term2 | [.. | [TermN]]]]</div></pre></td></tr></table></figure>
+<h3 id="非良构列表-improper-list"><a href="#非良构列表-improper-list" class="headerlink" title="非良构列表 improper list"></a>非良构列表 improper list</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[1 | 2]</div></pre></td></tr></table></figure>
+<p>像这种就是非良构列表。</p>
+<p>非良构列表，虽然可以用于模式匹配，但在 Erlang 标准函数（如 length()) 中使用会失败。这是因为 Erlang 期待的是良构列表。</p>
+<h3 id="良构列表"><a href="#良构列表" class="headerlink" title="良构列表"></a>良构列表</h3><p>这种列表的最后一个元素是 <em>空列表</em> 如:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[2]</div><div class="line">[1 | [2]]</div></pre></td></tr></table></figure>
+<h2 id="列表推导式-list-comprehension"><a href="#列表推导式-list-comprehension" class="headerlink" title="列表推导式 list comprehension"></a>列表推导式 list comprehension</h2><p>用来构建或修改列表。如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">1&gt; [ 2 * N || N &lt;- [1,2,3,4]].</div><div class="line">[2,4,6,8]</div><div class="line">2&gt;</div></pre></td></tr></table></figure>
+<p>语法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NewList = [Expression || Pattern &lt;- List, Condition1, Condition2, ... ConditionN]</div></pre></td></tr></table></figure>
+<p>Pattern &lt;- List 称为 生成器表达式, generator expression</p>
+<p>最完整的语法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NewList = [Expression || GeneratorExp1, GeneratorExp2, Condition1, Condition2, ... ConditionN]</div></pre></td></tr></table></figure>
+<h2 id="位语法"><a href="#位语法" class="headerlink" title="位语法"></a>位语法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;&lt;&gt;&gt;</div></pre></td></tr></table></figure>
+<p>在这括号里，可以用逗号，将区段之间分隔。一个区段，就是一个二进制的位序列。如:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Color =  16#F09A29</div><div class="line">Pixel = &lt;&lt;Color:24&gt;&gt;</div></pre></td></tr></table></figure>
+<p>匹配模式：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;&lt;Pattern, Rest/binary&gt;&gt;</div></pre></td></tr></table></figure>
+<p>它与列表模式匹配中的</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[Head | Tail]</div></pre></td></tr></table></figure>
+<p>是一样的。</p>
+<h2 id="二进制字符串"><a href="#二进制字符串" class="headerlink" title="二进制字符串"></a>二进制字符串</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;&lt;<span class="string">"Hello word"</span>&gt;&gt;</div></pre></td></tr></table></figure>
+<h2 id="二进制推导式"><a href="#二进制推导式" class="headerlink" title="二进制推导式"></a>二进制推导式</h2><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;&lt; &lt;&lt;X&gt;&gt; || &lt;&lt;X&gt;&gt; &lt;= &lt;&lt;1,2,3,4,5&gt;&gt;, X rem 2 == 0 &gt;&gt;.</div></pre></td></tr></table></figure>
+<p>与列表推导式类似！</p>
+<h2 id="Erlang-适用和不适用的场景"><a href="#Erlang-适用和不适用的场景" class="headerlink" title="Erlang 适用和不适用的场景"></a>Erlang 适用和不适用的场景</h2><p>Erlang 历来不擅长数值密集型计算。</p>
+<p>对于不需要数值计算的应用，如：事件响应、消息传递等, Erlang 通常是非常快的。</p>
+<h1 id="第二章"><a href="#第二章" class="headerlink" title="第二章"></a>第二章</h1><h2 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-module(name).</div></pre></td></tr></table></figure>
+<p>注意, name 是一个 <em>原子</em> ，并且要跟文件名相同（除开后缀）</p>
+<p>导出函数</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-export([Function1/Arity, Function2/Arity,...,FunctionN/Arity]).</div></pre></td></tr></table></figure>
+<p>导入函数（不太建议这样子使用）</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-import(Module, [Function1/Arity, Function2/Arity,...,FunctionN/Arity]).</div></pre></td></tr></table></figure>
+<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">name(Args) -&gt; Body.</div></pre></td></tr></table></figure>
+<p>name 必须是一个 <em>原子</em> , Body 可以是一个或多个用逗号分隔的 Erlang 表达式。函数以一个句点结束。注意，和许多命令式语言不同，Erlang 中没有 return 关键字。return 毫无用处，无需显式说明，函数中最后一个表达式的执行结果会自动被作为返回值传递给调用者。</p>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">% 这是注释</div></pre></td></tr></table></figure>
+<h2 id="宏"><a href="#宏" class="headerlink" title="宏"></a>宏</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-define(Macro, some_value).</div></pre></td></tr></table></figure>
+<p>使用宏:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?Macro</div></pre></td></tr></table></figure>
+<p>条件判断:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-ifdef(Macro).</div><div class="line"></div><div class="line">-<span class="keyword">else</span>.</div><div class="line"></div><div class="line">-endif.</div></pre></td></tr></table></figure>
+<h2 id="元数据"><a href="#元数据" class="headerlink" title="元数据"></a>元数据</h2><p>查看元数据：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">moduleName:module_info().</div></pre></td></tr></table></figure>
+<h2 id="注意-2"><a href="#注意-2" class="headerlink" title="注意"></a>注意</h2><p>关于模块设计：一定要避免环形依赖。</p>
+<h1 id="第三章"><a href="#第三章" class="headerlink" title="第三章"></a>第三章</h1><h2 id="模式匹配"><a href="#模式匹配" class="headerlink" title="模式匹配"></a>模式匹配</h2><p>Erlang 中，函数中的模式匹配，会同时完成函数选择和变量绑定两件事。无需先绑定变量，然后再去比较它们。</p>
+<p>其中，每一条函数声明都被称为一个函数子句(function clause) 。函数子句之间必须用分号(;)分隔，所有函数子句形成一个完整的函数定义。最后一个函数子句以句点结束。</p>
+<h2 id="绑定变量和自由变量"><a href="#绑定变量和自由变量" class="headerlink" title="绑定变量和自由变量"></a>绑定变量和自由变量</h2><p>变量绑定：就是将一个值附着到一个未绑定的变量上。</p>
+<p>在 Erlang 中，如果给一个已绑定的变量赋值，除非这个新值和变量原有的值相同，否则就会引发错误。</p>
+<h2 id="卫语句-guard"><a href="#卫语句-guard" class="headerlink" title="卫语句 guard"></a>卫语句 guard</h2><p>它是附加在函数头中的语句，能够让模式匹配更具表达力。如:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">old_enough(X) when X &gt;= 16 -&gt; <span class="literal">true</span>;</div><div class="line">old_enough(_) -&gt; <span class="literal">false</span>.</div></pre></td></tr></table></figure>
+<p>在卫表达式中，逗号(,) 的作用和操作符 <em>andalso</em> 类似，分号(;) 和 <em>orelse</em> 类似（不过要注意短路的问题）</p>
+<blockquote>
+<p>不过，卫语句中不能使用用户自定义函数。</p>
+</blockquote>
+<h2 id="if-表达式"><a href="#if-表达式" class="headerlink" title="if 表达式"></a>if 表达式</h2><p>也称为 <em>卫模式 guard pattern</em></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">if</div><div class="line">  X &gt; 1 -&gt; io:format("~p &gt; 1~n", [X]);</div><div class="line">  true -&gt; ok</div><div class="line">end.</div></pre></td></tr></table></figure>
+<h2 id="case-…-of-表达式"><a href="#case-…-of-表达式" class="headerlink" title="case … of 表达式"></a>case … of 表达式</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">case lists:memeber(X, Set) of </div><div class="line">	true -&gt; Set;</div><div class="line">	false -&gt; [X | Set]</div><div class="line">end.</div></pre></td></tr></table></figure>
+<h1 id="第四章"><a href="#第四章" class="headerlink" title="第四章"></a>第四章</h1><h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><p>Erlang 是一门强类型的动态语言。</p>
+<h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">erlang:TypeA_to_TypeB().</div></pre></td></tr></table></figure>
+<h2 id="检测数据类型"><a href="#检测数据类型" class="headerlink" title="检测数据类型"></a>检测数据类型</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">is_xxxx().</div><div class="line"></div><div class="line">type_of(X).</div></pre></td></tr></table></figure>
+<h1 id="第五章"><a href="#第五章" class="headerlink" title="第五章"></a>第五章</h1><h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><p>编写递归:</p>
+<ol>
+<li>基本情形</li>
+<li>调用自己的函数</li>
+<li>用于测试的列表</li>
+</ol>
+<p>例子：计算列表的长度:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">len([]) -&gt;</div><div class="line">  0;</div><div class="line">len([_ | T]) -&gt;</div><div class="line">  1 + len(T).</div></pre></td></tr></table></figure>
+<h2 id="尾递归"><a href="#尾递归" class="headerlink" title="尾递归"></a>尾递归</h2><p>普通的递归，会进行操作的叠加，而尾递归，则旨在消除这个叠加，方法是在它们出现时，就对其进行归约。</p>
+<h1 id="第六章"><a href="#第六章" class="headerlink" title="第六章"></a>第六章</h1><h2 id="高阶函数"><a href="#高阶函数" class="headerlink" title="高阶函数"></a>高阶函数</h2><p>如果一个函数的参数，是以另一个函数来传递的话，则这个函数称为 <em>高阶函数(higher-order function)</em></p>
+<h2 id="匿名函数和闭包"><a href="#匿名函数和闭包" class="headerlink" title="匿名函数和闭包"></a>匿名函数和闭包</h2><p>又称为 <em>funs</em> ，除了不能递归调用自己（因为它是匿名，所以。。。）</p>
+<p>注意：不管匿名函数在哪里，被继承的作用域会一直跟随着它！即使把这个匿名函数传递给另外一个函数。</p>
+<p>闭包：可以让函数引用到它所携带的带些环境（作用域中的值部分）。</p>
+<h1 id="第七章"><a href="#第七章" class="headerlink" title="第七章"></a>第七章</h1><h2 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h2><ol>
+<li>编译期错误</li>
+<li>逻辑错误</li>
+<li>运行时错误</li>
+</ol>
+<h2 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h2><ol>
+<li>出错 error : 调用 erlang:error(Reason) . 它会结束当前进程的执行，引发运行时错误。</li>
+<li>退出 exit : 内部退出: exit/1 ； 外部退出: exit/2 ，在多进程环境中使用。</li>
+<li>抛出 throw : 抛出异常: throw(permission_denied).</li>
+</ol>
+<h2 id="处理异常"><a href="#处理异常" class="headerlink" title="处理异常"></a>处理异常</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">try Expression of</div><div class="line">	SuccessfulPattern1 [Guards] -&gt;</div><div class="line">		Expression1;</div><div class="line">	SuccessfulPattern2 [Guards] -&gt;</div><div class="line">		Expression2</div><div class="line">catch</div><div class="line">	TypeOfError:ExceptionPattern1 -&gt;</div><div class="line">		Expression3;</div><div class="line"></div><div class="line">	TypeOfError:ExceptionPattern2 -&gt;</div><div class="line">		Expression4</div><div class="line">after</div><div class="line">	Expression5		</div><div class="line">end.</div></pre></td></tr></table></figure>
+<p>after 类似其他语言的 finally </p>
+<h1 id="第八章"><a href="#第八章" class="headerlink" title="第八章"></a>第八章</h1><h1 id="第九章"><a href="#第九章" class="headerlink" title="第九章"></a>第九章</h1><h2 id="记录-record"><a href="#记录-record" class="headerlink" title="记录 record"></a>记录 record</h2><p>它只是元组的一种语法糖。</p>
+<p>定义：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-record(name, &#123;property1, property1....&#125;).</div></pre></td></tr></table></figure>
+<p>使用：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#recordName&#123;property1=value1, property2=value2...&#125;.</div></pre></td></tr></table></figure>
+<p>读取</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">RecordVar = #recordName&#123;property1=v1, property2=v2...&#125;.</div><div class="line"></div><div class="line">RecordVar#recordName.property1.</div></pre></td></tr></table></figure>
+<p>共享记录: 通过使用 Erlang 的头文件来实现。(xxx.hrl)</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">在 xxx.hrl 文件中定义：</div><div class="line"></div><div class="line">-record(记录名, &#123;属性1，属性2 ...&#125;).</div></pre></td></tr></table></figure>
+<p>然后在其他的 erl 文件中包含进来:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-include("xxx.hrl").</div></pre></td></tr></table></figure>
+<h2 id="K-V-存储"><a href="#K-V-存储" class="headerlink" title="K-V 存储"></a>K-V 存储</h2><h3 id="属性列表-proplists"><a href="#属性列表-proplists" class="headerlink" title="属性列表 proplists:"></a>属性列表 proplists:</h3><p>形如:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[&#123;Key, Value&#125;]</div></pre></td></tr></table></figure>
+<p>的元组列表。</p>
+<h3 id="有序字典-orddict"><a href="#有序字典-orddict" class="headerlink" title="有序字典 orddict:"></a>有序字典 orddict:</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;Key, Value&#125;</div></pre></td></tr></table></figure>
+<h3 id="字典-dict-和通用平衡树-gb-trees-（大量数据存储）"><a href="#字典-dict-和通用平衡树-gb-trees-（大量数据存储）" class="headerlink" title="字典(dict:)和通用平衡树(gb_trees:)（大量数据存储）"></a>字典(dict:)和通用平衡树(gb_trees:)（大量数据存储）</h3><p>字典的读取性能最好，其他的话，可以用 <em>gr_trees</em></p>
+<h2 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h2><ol>
+<li>ordsets : 有序集合（底层实现为有序列表）。主要用于小集合，是最慢、也是最简单的一种。</li>
+<li>sets : 擅长读密集型的处理。</li>
+<li>gb_sets : </li>
+<li>sofs : 集合的集合。</li>
+</ol>
+<h2 id="有向图"><a href="#有向图" class="headerlink" title="有向图"></a>有向图</h2><p>digraph 模块 和 digraph_utils 模块。</p>
+<h2 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h2><p>queue 模块</p>
+<h1 id="第十章"><a href="#第十章" class="headerlink" title="第十章"></a>第十章</h1><h2 id="创建进程"><a href="#创建进程" class="headerlink" title="创建进程"></a>创建进程</h2><p>spawn/1</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">F = fun() -&gt; 2 + 2 end.</div><div class="line"></div><div class="line">spawn(F).</div></pre></td></tr></table></figure>
+<h2 id="发送消息"><a href="#发送消息" class="headerlink" title="发送消息"></a>发送消息</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Pid ! <span class="string">'hello world'</span>.</div></pre></td></tr></table></figure>
+<p>向多个进程同发送同样的消息:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Pid1 ! Pid2 ! Pid3 ! <span class="string">'hello world'</span>.</div></pre></td></tr></table></figure>
+<h2 id="接收消息"><a href="#接收消息" class="headerlink" title="接收消息"></a>接收消息</h2><p>receive 表达式</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">receive </div><div class="line">	Pattern1 [when  guard1] -&gt; Exp1;</div><div class="line">	Pattern2 [when  guard2] -&gt; Exp2;</div><div class="line">	Pattern3 -&gt; Exp3</div><div class="line">[after Delay(超时时间，单位是毫秒) -&gt;</div><div class="line">	AfterExp</div><div class="line">end.</div></pre></td></tr></table></figure>
+<h1 id="第十一章"><a href="#第十一章" class="headerlink" title="第十一章"></a>第十一章</h1><h1 id="第十二章"><a href="#第十二章" class="headerlink" title="第十二章"></a>第十二章</h1><h2 id="链接-link"><a href="#链接-link" class="headerlink" title="链接 link"></a>链接 link</h2><p>当两个进程建立这种关系后，如果其中一个进程由于意外的抛出、出错或退出而死亡时，另外一个进程，也会死亡，把这两个进程独立的生存期绑定成一个关联在一起的生存期。</p>
+<blockquote>
+<p>它们是双向的，并且是不可以叠加的</p>
+</blockquote>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">5&gt; self().</div><div class="line"><span class="tag">&lt;<span class="name">0.72.0</span>&gt;</span></div><div class="line">6&gt; link(spawn(fun() -&gt; timer:sleep(5000), io:format("link退出~n"), exit(reason) end)).</div><div class="line">true</div><div class="line">link退出</div><div class="line">** exception error: reason</div><div class="line">7&gt; self().</div><div class="line"><span class="tag">&lt;<span class="name">0.76.0</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>注意， link 并不是一个原子操作。可以使用:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">spawn_link/1-3</div></pre></td></tr></table></figure>
+<p>来实现它们的原子操作</p>
+<h2 id="捕获退出信息"><a href="#捕获退出信息" class="headerlink" title="捕获退出信息"></a>捕获退出信息</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">process_flag(trap_exit, true).</div></pre></td></tr></table></figure>
+<h2 id="监控器-monitor"><a href="#监控器-monitor" class="headerlink" title="监控器 monitor"></a>监控器 monitor</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">erlang:monitor(process, Pid).</div></pre></td></tr></table></figure>
+<p>第一个参数永远是 <em>process</em> ，第二个参数是 Pid</p>
+<p>原子版:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">spawn_monitor/1-3</div></pre></td></tr></table></figure>
+<h2 id="命名进程"><a href="#命名进程" class="headerlink" title="命名进程"></a>命名进程</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">register(name, Pid).</div></pre></td></tr></table></figure>
+<p>获取命名进程的Pid:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Pid = whereis(name).</div></pre></td></tr></table></figure>
+<h1 id="第十三章"><a href="#第十三章" class="headerlink" title="第十三章"></a>第十三章</h1><h1 id="第十四章"><a href="#第十四章" class="headerlink" title="第十四章"></a>第十四章</h1><blockquote>
+<p>OTP </p>
+</blockquote>
+<h2 id="init-函数"><a href="#init-函数" class="headerlink" title="init 函数"></a>init 函数</h2><p>它负责初始化服务器的状态，并完成服务器需要的所有一次性任务。</p>
+<p>它可以返回:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;ok, State&#125;</div><div class="line"></div><div class="line">&#123;ok, State, TimeOut&#125;</div><div class="line"></div><div class="line">&#123;ok, State, hibernate&#125;</div><div class="line"></div><div class="line">&#123;stop, Reason&#125;</div><div class="line"></div><div class="line">ignore</div></pre></td></tr></table></figure>
+<p><em>State</em> 会直接传递给进程的主循环，并作为进程的状态一直保存在那里。</p>
+<h2 id="handle-call-函数"><a href="#handle-call-函数" class="headerlink" title="handle_call 函数"></a><em>handle_call</em> 函数</h2><p><em>handle_call/3</em> 用于处理同步消息。它有三个参数： Request, From, State </p>
+<blockquote>
+<p>用于同步消息的处理</p>
+</blockquote>
+<p>它可以有8种返回值:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&#123;reply, Reply, NewState&#125;</div><div class="line"></div><div class="line">&#123;reply, Reply, NewState, TimeOut&#125;</div><div class="line"></div><div class="line">&#123;reply, Reply, NewState, hibernate&#125;</div><div class="line"></div><div class="line">&#123;noreply, NewState&#125;</div><div class="line"></div><div class="line">&#123;noreply, NewState, TimeOut&#125;</div><div class="line"></div><div class="line">&#123;noreply, NewState, hibernate&#125;</div><div class="line"></div><div class="line">&#123;stop, Reason, Reply, NewState&#125;</div><div class="line"></div><div class="line">&#123;stop, Reason, NewState&#125;</div></pre></td></tr></table></figure>
+<h2 id="handle-cast-函数"><a href="#handle-cast-函数" class="headerlink" title="handle_cast 函数"></a><em>handle_cast</em> 函数</h2><p>它有两个参数：Message 和 State .</p>
+<blockquote>
+<p>用于异步消息的处理。</p>
+</blockquote>
+<p>它可以返回:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;noreply, NewState&#125;</div><div class="line"></div><div class="line">&#123;noreply, NewState, TimeOut&#125;</div><div class="line"></div><div class="line">&#123;noreply, NewState, hibernate&#125;</div><div class="line"></div><div class="line">&#123;stop, Reason, NewState&#125;</div></pre></td></tr></table></figure>
+<h2 id="handle-info-函数"><a href="#handle-info-函数" class="headerlink" title="handle_info 函数"></a><em>handle_info</em> 函数</h2><p>它和 <em>handle_cast/2</em> 相似，返回值也完全一样。区别在于： 这个回调函数只用来处理直接通过 <em>!</em> 操作符发送的消息，以及如 <em>init/1</em> 中的 <em>timeout</em> 、监控器通知或 EXIT 信号之类的特殊消息。</p>
+<h2 id="terminate-函数"><a href="#terminate-函数" class="headerlink" title="terminate 函数"></a>terminate 函数</h2><p>它有两个参数： Reason, State ，分别对应 stop 元组中的同名字段。</p>
+<p>注意，所有在 <em>init/1</em> 中的动作都应在 <em>terminate/2</em> 中有对应的取消动作。</p>
+<h2 id="code-change-函数"><a href="#code-change-函数" class="headerlink" title="code_change 函数"></a><em>code_change</em> 函数</h2><p><em>code_change/3</em> 用于代码升级。调用：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">code_change(PreviousVersion, State, Extra)</div></pre></td></tr></table></figure>
+<h2 id="gen-server-实践"><a href="#gen-server-实践" class="headerlink" title="gen_server 实践"></a><em>gen_server</em> 实践</h2><p>在相应的模块中加入:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-behavior(gen_server).</div></pre></td></tr></table></figure>
+<p>然后直接编译该模块，可以看到它会报:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">$erlc demo.erl </div><div class="line">demo.erl:11: Warning: undefined callback function handle_call/3 (behaviour 'gen_server')</div><div class="line">demo.erl:11: Warning: undefined callback function handle_cast/2 (behaviour 'gen_server')</div><div class="line">demo.erl:11: Warning: undefined callback function init/1 (behaviour 'gen_server')</div><div class="line"></div><div class="line">#</div></pre></td></tr></table></figure>
+<h1 id="第十五章"><a href="#第十五章" class="headerlink" title="第十五章"></a>第十五章</h1><blockquote>
+<p>Erlang 中的有限状态机： 被实现为一个进程，运行一组给定的函数（状态）、接收一些消息（事件）以驱动状态迁移。</p>
+</blockquote>
+<p>即 <em>gen_fsm</em> 行为(finite-state machine, FSM)</p>
+<h2 id="init-函数-1"><a href="#init-函数-1" class="headerlink" title="init 函数"></a>init 函数</h2><p>它和 <em>gen_server</em> 的 <em>init/1</em> 使用方式一样。返回值可以为:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;ok, StateName, Data&#125;</div><div class="line"></div><div class="line">&#123;ok, StateName, Data, Timeout&#125;</div><div class="line"></div><div class="line">&#123;ok, StateName, Data, hibernate&#125;</div><div class="line"></div><div class="line">&#123;stop, Reason&#125;</div></pre></td></tr></table></figure>
+<p>注意，StateName 它是原子类型。</p>
+<h2 id="StateName-函数"><a href="#StateName-函数" class="headerlink" title="StateName 函数"></a>StateName 函数</h2><p>函数 <em>StateName/2</em> （参数分别为 Event ，StateData）和 <em>StateName/3</em> (参数分别为: Event, From, StateData) 是占位名字，由你来决定它们的内容。假设 <em>init/1</em> 函数返回 </p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;ok, sitting, dog&#125;</div></pre></td></tr></table></figure>
+<p>这意味着FSM会处于 <em>sitting</em> 状态。</p>
+<p>这时，<em>sitting/2</em> （异步事件）或 <em>sitting/3</em> (同步事件) 会被调用。</p>
+<p><em>StateName/2</em> 可以返回:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;next_state, NextStateName, NewStateData&#125;</div><div class="line"></div><div class="line">&#123;next_state, NextStateName, NewStateData, Timeout&#125;</div><div class="line"></div><div class="line">&#123;next_state, NextStateName, hibernate&#125;</div><div class="line"></div><div class="line">&#123;stop, Reason, NewStateData&#125;</div></pre></td></tr></table></figure>
+<p><em>StateName/3</em> 可以返回:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&#123;reply, Reply, NextStateName, NewStateData&#125;</div><div class="line">&#123;reply, Reply, NextStateName, NewStateData, Timeout&#125;</div><div class="line">&#123;reply, Reply, NextStateName, NewStateData, hibernate&#125;</div><div class="line"></div><div class="line">&#123;next_state, NextStateName, NewStateData&#125;</div><div class="line">&#123;next_state, NextStateName, NewStateData, Timeout&#125;</div><div class="line">&#123;next_state, NextStateName, NewStateData, hibernate&#125;</div><div class="line"></div><div class="line">&#123;stop, Reason, Reply, NewStateData&#125;</div><div class="line">&#123;stop, Reason, NewStateData&#125;</div></pre></td></tr></table></figure>
+<h2 id="handle-event-函数"><a href="#handle-event-函数" class="headerlink" title="handle_event 函数"></a><em>handle_event</em> 函数</h2><p>无论当前在哪个状态，全局事件都会触发一个特定反应。（就是这个函数）</p>
+<p>参数分别是： Event, StateName, Data</p>
+<p>它的返回值和 <em>StateName/2</em> 一样。</p>
+<h2 id="handle-syn-event-函数"><a href="#handle-syn-event-函数" class="headerlink" title="handle_syn_event 函数"></a><em>handle_syn_event</em> 函数</h2><p><em>handle_syn_event/4</em> 和 <em>StateName/3</em> 的关系，类似于 <em>handle_event/2</em> 和 <em>StateName/2</em> 的关系一样。</p>
+<p>这个函数处理同步全局事件。参数和返回值都和 <em>StateName/3</em> 一样。</p>
+<h2 id="code-change-和-terminate-函数"><a href="#code-change-和-terminate-函数" class="headerlink" title="code_change 和 terminate 函数"></a>code_change 和 terminate 函数</h2><p>它们和 <em>gen_server</em> 中完全一样。</p>
+<h1 id="第十六章"><a href="#第十六章" class="headerlink" title="第十六章"></a>第十六章</h1><p>Erlang 中的 事件处理器，它也是OTP中一种行为： <em>gen_event</em></p>
+<p><em>gen_event</em> 行为运行这个接受并回调函数的事件管理器进程，而你只需要提供包含这些回调函数的模块即可。</p>
+<p>事件处理器的回调函数：</p>
+<h2 id="init-和-terminate-函数"><a href="#init-和-terminate-函数" class="headerlink" title="init 和 terminate 函数"></a>init 和 terminate 函数</h2><p>它与上面的 <em>gen_server</em> 和 <em>gen_fsm</em> 行为中的类似。</p>
+<h2 id="handle-event-函数-1"><a href="#handle-event-函数-1" class="headerlink" title="handle_event 函数"></a><em>handle_event</em> 函数</h2><p><em>handle_event(Event, State)</em> ，它是异步处理的。返回值:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;ok, NewState&#125;</div><div class="line"></div><div class="line">&#123;ok, NewState, hibernate&#125;</div><div class="line"></div><div class="line">remove_handler</div><div class="line"></div><div class="line">&#123;swap_handler, Args1, NewState, NewHandler, Args2&#125;</div></pre></td></tr></table></figure>
+<p>返回 <em>remove_handler</em> 会导致事件处理器从事件管理器中删除。</p>
+<p>最后一个返回值 {swap…} ，这表示移除当前事件处理器，并用一个新的替代它。</p>
+<h2 id="handle-call-函数-1"><a href="#handle-call-函数-1" class="headerlink" title="handle_call 函数"></a><em>handle_call</em> 函数</h2><p>它与 <em>gen_server</em> 中的 <em>handle_call</em> 回调类似。可返回:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;ok, Reply, NewState&#125;</div><div class="line"></div><div class="line">&#123;ok, Reply, NewState, hibernate&#125;</div><div class="line"></div><div class="line">&#123;remove_handler, Reply&#125;</div><div class="line"></div><div class="line">&#123;swap_handler, Reply, Args1, NewState, Handler2, Args2&#125;</div></pre></td></tr></table></figure>
+<p>使用 <em>gen_event:call/3-4</em> 可以发起该调用。</p>
+<h2 id="handle-info-函数-1"><a href="#handle-info-函数-1" class="headerlink" title="handle_info 函数"></a><em>handle_info</em> 函数</h2><p>它只处理带外消息，如退出信号或使用 <em>!</em> 操作符直接向事件管理器进程发送消息。</p>
+<p>与 <em>gen_server</em> 中的 <em>handle_info</em> 使用场景类似。</p>
+<h2 id="code-change-函数-1"><a href="#code-change-函数-1" class="headerlink" title="code_change 函数"></a><em>code_change</em> 函数</h2><p>参数： OldVsn, State, Extra</p>
+<h1 id="第十七章"><a href="#第十七章" class="headerlink" title="第十七章"></a>第十七章</h1><p>基本概念：</p>
+<p>工作者、监督者、监督树</p>
+<h2 id="使用监督者"><a href="#使用监督者" class="headerlink" title="使用监督者"></a>使用监督者</h2><p>只要提供一个回调函数： init/1 ，它的返回值为:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;ok, &#123;&#123;RestartStrategy, MaxRestart, MaxTime&#125;, [ChildSpec]&#125;&#125;.</div></pre></td></tr></table></figure>
+<h3 id="重启策略-RestartStrategy"><a href="#重启策略-RestartStrategy" class="headerlink" title="重启策略 RestartStrategy"></a>重启策略 RestartStrategy</h3><p>可以为 <em>one_for_one</em> ，<em>one_for_all</em> ，<em>rest_for_one</em> 和 <em>simple_one_for_one</em></p>
+<p><em>one_for_one</em> : 当监督者监督了很多工作者，当其中一个工作者失败时，只需要重启这个工作者即可。</p>
+<p><em>one_for_all</em> : 这些工和者必须互相依赖才能正常工作时，就使用这个策略。</p>
+<p><em>rest_for_one</em> : 当需要启动一组进程，而这些进程互相依赖形成一条链时，可以使用该策略。（A -&gt; B, B-&gt;C, C-D) 。即，如果一个进程死了，那么所有在这个进程之后启动的进程，都将被重启。反之不然。</p>
+<p><em>simple_one_for_one</em> : 当希望以动态的方式向监督者增加子进程，而不是静态启动子进程时，可以使用这种策略。</p>
+<h3 id="MaxRestart-和-MaxTime"><a href="#MaxRestart-和-MaxTime" class="headerlink" title="MaxRestart 和 MaxTime"></a>MaxRestart 和 MaxTime</h3><p>意思是在 MaxTime （单位为秒） 指定的时间内，重启次数超过了 MaxRestart 指定的数字，而么监督者会放弃重启，并终止所有子进程，然后自杀，永远停止运行。</p>
+<h3 id="ChildSpec-说明"><a href="#ChildSpec-说明" class="headerlink" title="ChildSpec 说明"></a>ChildSpec 说明</h3><p>抽象形式:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;ChildId, StartFunc, Restart, Shutdown, Type, Modules&#125;</div></pre></td></tr></table></figure>
+<p>ChildId : 只是监督者内部使用的一个名称。除了调试或想获取监督者所有子进程列表时，这个名字会比较有用之外，其他基本没什么用了。</p>
+<p>StartFunc : 是一个元组，用来指定子进程的启动方式。它采用了 {M, F, A} 的标准格式。</p>
+<p>Restart: 指定了监督者在某个特定的子进程死后的处理方式。可以为 <em>permanent</em> （一直要重启）, <em>temporary</em> （绝不应该被重启）, <em>transient</em> （正常终止就不会重启，异常死亡，比如非 normal 、shutdown、{shutdown, Reason} 就会重启）。</p>
+<p>Shutdown: 用来指定终止进程的超时期限 或 是一个原子： brutal_kill ，它表示无条件终止。</p>
+<p>Type: 可以让监督者知道子进程是一个监督者(supervisor)还是一个工作者(worker)。</p>
+<p>Modules: 一个列表，其中只有一个元素: 子进程行为使用的回调模块名。</p>
+<h1 id="第十八章"><a href="#第十八章" class="headerlink" title="第十八章"></a>第十八章</h1><h1 id="第十九章"><a href="#第十九章" class="headerlink" title="第十九章"></a>第十九章</h1><h2 id="OTP-应用结构"><a href="#OTP-应用结构" class="headerlink" title="OTP 应用结构"></a>OTP 应用结构</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ebin/</div><div class="line">include/</div><div class="line">priv/</div><div class="line">src/</div><div class="line">test/</div></pre></td></tr></table></figure>
+<h2 id="应用资源文件"><a href="#应用资源文件" class="headerlink" title="应用资源文件"></a>应用资源文件</h2><p>这个文件要放在 <em>ebin/</em> 目录下。命名通常是 <em>appName.app</em></p>
+<p>基本结构:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;application, ApplicationName, Properties&#125;.</div></pre></td></tr></table></figure>
+<p>ApplicationName 是一个原子， Properties 是一个 {Key, Value} 元组列表。</p>
+<h3 id="属性子集"><a href="#属性子集" class="headerlink" title="属性子集"></a>属性子集</h3><p><em>{description, “some description of your application”}</em></p>
+<p><em>{vsn, “1.2.3”}</em></p>
+<p><em>{modules, ModuleList}</em></p>
+<p><em>{registered, AtomList} 应用中进程注册名</em></p>
+<p><em>{env, [Key, Va]}</em></p>
+<p><em>{maxT, Milliseconds}</em> 应用最长运行时间，默认为 infinity</p>
+<p><em>{applications, AtomList}</em> 依赖其他应用的列表。在自己的应用被加载/启动之前，Erlang的应用管理系统会确保这些被依赖的应用先被加载或启动。</p>
+<p><em>{mod, {CallbackMod, Args}}</em> 启动应用时，会调用 <em>CallbackMod:start(normal, Args)</em> ,停止时，会调用 <em>CallbackMod:stop(Args)</em></p>
+<h3 id="启动应用"><a href="#启动应用" class="headerlink" title="启动应用"></a>启动应用</h3><p>application:start(AppName, temporary) =&gt; 正常结束，则不处理，只有这个应用停止运行。如果异常结束，则报告出错消息，这个应用被终止，不再重启。</p>
+<p>application:start(AppName, transient) =&gt; 正常结束，则不处理，只有这个应用停止运行。如果异常结束，则报告出错消息，其他所有应用会被停止，VM也会被关闭。</p>
+<p>application:start(AppName, permanent) =&gt; 正常结束或异常结束，其他所有应用都会被停止，VM也会被关闭。</p>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
