@@ -9,7 +9,7 @@
   - [Computational Marine Hydrodynamics Laboratory](http://dcwan.sjtu.edu.cn/)
   
 - Bachelor at Huazhong University of Science & Technology (2008 - 2012) 
-  - [Naval Architecture & Ocean Engineering]（http://ch.hust.edu.cn/）
+  - [Naval Architecture & Ocean Engineering](http://ch.hust.edu.cn/)
   - GPA: 3.5/4.0  &  Ranking: 15/200
 
 ---
