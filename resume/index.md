@@ -1,15 +1,15 @@
 
 ### Education
 - Ph.D candidate at Memorial Uniersity of Newfoundland (2015 - Present) 
-  - Ocean & Naval Architecture Engineering
-  - Adanced Marine Hydrodynamics Laboratory 
+  - [Ocean & Naval Architecture Engineering](https://www.mun.ca/engineering/ona/)
+  - [Adanced Marine Hydrodynamics Laboratory](http://www.engr.mun.ca/~qiuw/index_files/Page594.htm)
 
 - Master at Shanghai Jiao Tong University (2012 - 2015) 
   - Naval Architecture & Ocean Engineering
-  - Computational Marine Hydrodynamics Laboratory
+  - [Computational Marine Hydrodynamics Laboratory](http://dcwan.sjtu.edu.cn/)
   
 - Bachelor at Huazhong University of Science & Technology (2008 - 2012) 
-  - Naval Architecture & Ocean Engineering
+  - [Naval Architecture & Ocean Engineering]（http://ch.hust.edu.cn/）
   - GPA: 3.5/4.0  &  Ranking: 15/200
 
 ---
@@ -17,26 +17,29 @@
 ### Research Highlights
 - Computational Fluid Dynamics & Marine hydrodynamics
 - Moving Particle Semi-implicit method & Lagrangian particle method
-- Fluid-Structure Interaction & Slamming & Water entry & Wave impact
+- Fluid-Structure Interaction & Slamming & Wave impact
 - Added resistance in waves & Seakeeping & Multi-phase flow 
 - High performance ship (Catamaran)
 
 ---
 
 ### Publications
-[Reference](https://scholar.google.ca/citations?user=ha5zv8IAAAAJ&hl=en)
+[Google Scholar](https://scholar.google.ca/citations?user=ha5zv8IAAAAJ&hl=en)
 
-1. Zha, R., Peng, H., Qiu, W. (2017) Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWWFB 2017.
 
-2. ZHA, R. S., YE, H. X., SHEN, Z. R., WAN, D. C. (2015). Numerical computations of resistance of high speed catamaran in calm water. Journal of Hydrodynamics, Ser. B, 26(6), 930-938.
+1. Zha, R., Qiu, W., & Peng, H. (2017, June). Solving 2D Fluid-Structure Interaction Problem by a Coupled Particle Method. In ASME 2017 36th International Conference on Ocean, Offshore and Arctic Engineering (pp. V07AT06A046-V07AT06A046). American Society of Mechanical Engineers.
 
-3. ZHA, R. S., YE, H. X., SHEN, Z. R., WAN, D. C. (2014). Numerical study of viscous wave-making resistance of ship navigation in still water. Journal of Marine Science and Application, 13(2), 158-166.
+2. Zha, R., Peng, H., Qiu, W. (2017) Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWWFB 2017.
 
-4. ZHA, R. S., SHEN, Z. R., WAN, D. C. RANS simulation on added resistance of ship sailing in different regular wave conditions. Proceedings of the 13th National Congress on Hydrodynamics & 26th National Conference on Hydrodynamics, Qingdao, China, 2014.  
+3. ZHA, R. S., YE, H. X., SHEN, Z. R., WAN, D. C. (2015). Numerical computations of resistance of high speed catamaran in calm water. Journal of Hydrodynamics, Ser. B, 26(6), 930-938.
 
-5. ZHA, R. S., FENG. G., HE J. Y., YE, H. X., WAN, D. C. Effect of different hull forms on the ship resistance performance in still water. Proceedings of the 12th National Congress on Hydrodynamics & 25th National Conference on Hydrodynamics, Zhoushan, China, 2013. 
+4. ZHA, R. S., YE, H. X., SHEN, Z. R., WAN, D. C. (2014). Numerical study of viscous wave-making resistance of ship navigation in still water. Journal of Marine Science and Application, 13(2), 158-166.
 
-6. Ruoshi Cha and Decheng Wan, Numerical Investigation of Motion Response of Two Model Ships in Regular Waves, Proceedings of 8th International Conference on Asian and Pacific Coasts (APAC 2015), IIT Madras, Chennai, India, July 7-10, 2015, Procedia Engineering, 2015, Vol. 116, pp. 20-31.
+5. ZHA, R. S., SHEN, Z. R., WAN, D. C. RANS simulation on added resistance of ship sailing in different regular wave conditions. Proceedings of the 13th National Congress on Hydrodynamics & 26th National Conference on Hydrodynamics, Qingdao, China, 2014.  
+
+6. ZHA, R. S., FENG. G., HE J. Y., YE, H. X., WAN, D. C. Effect of different hull forms on the ship resistance performance in still water. Proceedings of the 12th National Congress on Hydrodynamics & 25th National Conference on Hydrodynamics, Zhoushan, China, 2013. 
+
+7. Ruoshi Cha and Decheng Wan, Numerical Investigation of Motion Response of Two Model Ships in Regular Waves, Proceedings of 8th International Conference on Asian and Pacific Coasts (APAC 2015), IIT Madras, Chennai, India, July 7-10, 2015, Procedia Engineering, 2015, Vol. 116, pp. 20-31.
 
 ---
 
@@ -65,23 +68,5 @@ Considered a portion of petroleum stored under a portion of water in a tank. The
 
 
 
-You can use the [editor on GitHub](https://github.com/zharuosi/zharuosi.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.e
-
-
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/zharuosi/zharuosi.github.io/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
 
 ![image](https://github.com/zharuosi/zharuosi.github.io/blob/master/db-rubber-multi.gif)
