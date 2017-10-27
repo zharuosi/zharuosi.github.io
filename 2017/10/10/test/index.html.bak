@@ -10,8 +10,8 @@
     <meta name="keywords" content="java,map">
     <meta property="og:type" content="article">
     <meta property="og:title" content="HashMap Vs. ConcurrentHashMap Vs. SynchronizedMap – 如何在Java中同步HashMap">
-    <meta property="og:url" content="https://zharuosi.github.io/2017/10/10/test/index.html">
-    <meta property="og:site_name" content="zharuosi">
+    <meta property="og:url" content="https://emacsist.github.io/2017/10/10/HashMap-Vs-ConcurrentHashMap-Vs-SynchronizedMap-–-如何在Java中同步HashMap/index.html">
+    <meta property="og:site_name" content="emacsist">
     <meta property="og:description" content="原文  HashMap 在Java中是一种非常强大的数据结构。我们会经常使用它并且在绝大多数的应用中都会使用到它。这里有一些我之前写的例子: 如何实现线程安全的缓存 , 如何转换 HashMap 为 ArrayList? 在上面的例子中，我们都使用了 HashMap，但这些是相当简单的 HashMap 的用法。 HashMap 是一个非同步 的集合类。 你有过以下的问题吗？ ConcurrentH">
     <meta property="og:image" content="https://emacsist.github.io/2017/10/10/HashMap-Vs-ConcurrentHashMap-Vs-SynchronizedMap-–-如何在Java中同步HashMap/quiver-image-url/A59815F10DC305E6B630DB6CD0E6F0A6.jpg%20=1454x698">
     <meta property="og:updated_time" content="2017-10-10T07:06:47.000Z">
@@ -46,20 +46,20 @@
 	})();
   </script>
   </head>
-  <body> <span id="toolbox-mobile" class="toolbox-mobile">Hub</span>
+  <body> <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
     <div class="post-header LEFT">
-      <div class="toolbox"> <a class="toolbox-entry" href="/"> <span class="toolbox-entry-text">Hub
-            </span> <i class="icon-angle-down"></i> <i class="icon-home"></i>
+      <div class="toolbox"> <a class="toolbox-entry" href="/"> <span class="toolbox-entry-text">盒
+            子</span> <i class="icon-angle-down"></i> <i class="icon-home"></i>
         </a>
         <ul class="list-toolbox">
           <li class="item-toolbox"> <a class="CIRCLE" href="/archives/" rel="noopener noreferrer"
-              target="_self"> Blog </a> </li>
+              target="_self"> 博客 </a> </li>
           <li class="item-toolbox"> <a class="CIRCLE" href="/tags/" rel="noopener noreferrer"
-              target="_self"> Tags </a> </li>
+              target="_self"> 标签 </a> </li>
           <li class="item-toolbox"> <a class="CIRCLE" href="/books/" rel="noopener noreferrer"
-              target="_self"> Read </a> </li>
+              target="_self"> 阅读 </a> </li>
           <li class="item-toolbox"> <a class="CIRCLE" href="/about/" rel="noopener noreferrer"
-              target="_self"> About </a> </li>
+              target="_self"> 关于 </a> </li>
         </ul>
       </div>
     </div>
@@ -334,7 +334,7 @@ class="attr">faster</span></span></div></pre>
       <div class="text-center donation">
         <div class="inner-donation"> <span class="btn-donation">支持一下</span>
           <div class="donation-body">
-            <div class="tip text-center">扫一扫，支持 Ruosi Zha</div>
+            <div class="tip text-center">扫一扫，支持 emacsist</div>
             <ul class="theme.donation.items.length">
               <li class="item"> <img src="/img/wxpay.jpeg" alt=""> </li>
               <li class="item"> <img src="/img/alipay.jpeg" alt=""> </li>
