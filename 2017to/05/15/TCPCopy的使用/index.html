@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>TCPCopy的使用 | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="tcpcpy," />
+  
+
+  <meta name="description" content="今天由于某些原因，DSP系统的测试环境不能用了，所以想复制一些正式环境的流量到测试服务器上。查找资料，发现了个 tcpcopy 项目，发现不错。 Github上虽然也有安装和使用手册，但对于第一次环境的人来说，还是有点模糊。经过自己动手设置，终于理解了它的使用方式： 安装就不多介绍了，这里只是描述使用 假设你的测试环境的应用监听的是 9001 ，而且是在 10.0.0.40  启动 interce">
+<meta name="keywords" content="tcpcpy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCPCopy的使用">
+<meta property="og:url" content="https://emacsist.github.io/2017/05/15/TCPCopy的使用/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="今天由于某些原因，DSP系统的测试环境不能用了，所以想复制一些正式环境的流量到测试服务器上。查找资料，发现了个 tcpcopy 项目，发现不错。 Github上虽然也有安装和使用手册，但对于第一次环境的人来说，还是有点模糊。经过自己动手设置，终于理解了它的使用方式： 安装就不多介绍了，这里只是描述使用 假设你的测试环境的应用监听的是 9001 ，而且是在 10.0.0.40  启动 interce">
+<meta property="og:updated_time" content="2017-06-02T16:41:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCPCopy的使用">
+<meta name="twitter:description" content="今天由于某些原因，DSP系统的测试环境不能用了，所以想复制一些正式环境的流量到测试服务器上。查找资料，发现了个 tcpcopy 项目，发现不错。 Github上虽然也有安装和使用手册，但对于第一次环境的人来说，还是有点模糊。经过自己动手设置，终于理解了它的使用方式： 安装就不多介绍了，这里只是描述使用 假设你的测试环境的应用监听的是 9001 ，而且是在 10.0.0.40  启动 interce">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#启动-intercept"><span class="toc-text">启动 intercept</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#启动-tcpcopy"><span class="toc-text">启动 tcpcopy</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意"><span class="toc-text">注意</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#丢包"><span class="toc-text">丢包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#负载"><span class="toc-text">负载</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-TCPCopy的使用" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            TCPCopy的使用
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.05.15</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#tcpcpy">
+        <span class="tag-name">tcpcpy</span>
+    <span class="tag-size">( 1 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <p>今天由于某些原因，DSP系统的测试环境不能用了，所以想复制一些正式环境的流量到测试服务器上。查找资料，发现了个 <a href="https://github.com/session-replay-tools/tcpcopy" target="_blank" rel="external">tcpcopy</a> 项目，发现不错。</p>
+<p>Github上虽然也有安装和使用手册，但对于第一次环境的人来说，还是有点模糊。经过自己动手设置，终于理解了它的使用方式：</p>
+<p>安装就不多介绍了，这里只是描述使用</p>
+<p>假设你的测试环境的应用监听的是 <em>9001</em> ，而且是在 <em>10.0.0.40</em> </p>
+<h1 id="启动-intercept"><a href="#启动-intercept" class="headerlink" title="启动 intercept"></a>启动 intercept</h1><p>假设 intercept 的IP为 <em>10.0.0.40</em> （ intercept 要与你的测试的应用程序所在的服务器在同一个），而且下面的 9001 也就是测试的应用程序的端口。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./intercept -i eth0 -F <span class="string">'tcp and src port 9001'</span> -d</div></pre></td></tr></table></figure>
+<p>注意，这里的 <em>9001</em> 就是要处理的当前服务器地址的源端口</p>
+<h1 id="启动-tcpcopy"><a href="#启动-tcpcopy" class="headerlink" title="启动 tcpcopy"></a>启动 tcpcopy</h1><p>假设 tcpcopy 的地址为 10.0.0.40</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./tcpcopy -x 80-10.0.0.40:9001 -s 10.0.0.40 -c 10.0.0.40</div></pre></td></tr></table></figure>
+<p><em>-x</em> ：表示将本机的 <em>80</em> 端口的流量，copy一份到 <em>10.0.0.40</em> 的 <em>9001</em> 端口。<br><em>-s</em> ：这个就是 intercept 的地址。<br><em>-c</em> ：tcpcopy 修改tcp的源IP地址，以免响应给最初的 client。</p>
+<h1 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h1><p>下面是要注意的事项</p>
+<h2 id="丢包"><a href="#丢包" class="headerlink" title="丢包"></a>丢包</h2><p>在测试过程中，发现它会丢包，测试的情况如下:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">9477 - 10000</div><div class="line">18959 - 20000</div><div class="line">28351 - 30000</div></pre></td></tr></table></figure>
+<p>上面是 <em>成功数/总请求数</em></p>
+<h2 id="负载"><a href="#负载" class="headerlink" title="负载"></a>负载</h2><p>10GB内存，8核的 ab 10W个请求：</p>
+<p>tcpcopy: 0.4% 的内存，53% 的CPU<br>intercept: 0.4% 的内存， 23% 的CPU</p>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

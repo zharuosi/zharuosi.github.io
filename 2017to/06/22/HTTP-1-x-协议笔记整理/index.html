@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>HTTP 1.x 协议笔记整理 | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="http,https," />
+  
+
+  <meta name="description" content="请求报文123456请求方法(GET,POST等) 空格  URL 空格 协议版本\r\n字段名: 字段值\r\n...字段名: 字段值\r\n\r\n请求体的内容 比如: 123456789GET /2017/06/02/Golang-%E6%B1%87%E7%BC%96%E6%9D%82%E9%A1%B9/ HTTP/1.1Host: emacsist.github.ioConnection:">
+<meta name="keywords" content="http,https">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP 1.x 协议笔记整理">
+<meta property="og:url" content="https://emacsist.github.io/2017/06/22/HTTP-1-x-协议笔记整理/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="请求报文123456请求方法(GET,POST等) 空格  URL 空格 协议版本\r\n字段名: 字段值\r\n...字段名: 字段值\r\n\r\n请求体的内容 比如: 123456789GET /2017/06/02/Golang-%E6%B1%87%E7%BC%96%E6%9D%82%E9%A1%B9/ HTTP/1.1Host: emacsist.github.ioConnection:">
+<meta property="og:updated_time" content="2017-06-22T08:27:53.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP 1.x 协议笔记整理">
+<meta name="twitter:description" content="请求报文123456请求方法(GET,POST等) 空格  URL 空格 协议版本\r\n字段名: 字段值\r\n...字段名: 字段值\r\n\r\n请求体的内容 比如: 123456789GET /2017/06/02/Golang-%E6%B1%87%E7%BC%96%E6%9D%82%E9%A1%B9/ HTTP/1.1Host: emacsist.github.ioConnection:">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#请求报文"><span class="toc-text">请求报文</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#响应报文"><span class="toc-text">响应报文</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HTTP1-1-协议规范"><span class="toc-text">HTTP1.1 协议规范</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-HTTP-1-x-协议笔记整理" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            HTTP 1.x 协议笔记整理
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.06.22</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#http">
+        <span class="tag-name">http</span>
+    <span class="tag-size">( 6 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#https">
+        <span class="tag-name">https</span>
+    <span class="tag-size">( 3 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <h1 id="请求报文"><a href="#请求报文" class="headerlink" title="请求报文"></a>请求报文</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">请求方法(GET,POST等) 空格  URL 空格 协议版本\r\n</div><div class="line">字段名: 字段值\r\n</div><div class="line">...</div><div class="line">字段名: 字段值\r\n</div><div class="line">\r\n</div><div class="line">请求体的内容</div></pre></td></tr></table></figure>
+<p>比如:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">GET /2017/06/02/Golang-%E6%B1%87%E7%BC%96%E6%9D%82%E9%A1%B9/ HTTP/1.1</div><div class="line">Host: emacsist.github.io</div><div class="line">Connection: keep-alive</div><div class="line">Pragma: no-cache</div><div class="line">Cache-Control: no-cache</div><div class="line">Upgrade-Insecure-Requests: 1</div><div class="line">User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36</div><div class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div><div class="line">Referer: https://emacsist.github.io/tags/golang/</div></pre></td></tr></table></figure>
+<h1 id="响应报文"><a href="#响应报文" class="headerlink" title="响应报文"></a>响应报文</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">协议及版本 空格 状态码 空格 描述\r\n</div><div class="line">字段: 字段值\r\n</div><div class="line">...</div><div class="line">字段: 字段值\r\n</div><div class="line">\r\n</div><div class="line">响应体的内容</div></pre></td></tr></table></figure>
+<p>比如:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">HTTP/1.1 200 OK</div><div class="line">Server: GitHub.com</div><div class="line">Content-Type: text/html; charset=utf-8</div><div class="line">Last-Modified: Fri, 16 Jun 2017 13:44:31 GMT</div><div class="line">Access-Control-Allow-Origin: *</div><div class="line">Expires: Thu, 22 Jun 2017 07:41:06 GMT</div><div class="line">Cache-Control: max-age=600</div><div class="line">Content-Encoding: gzip</div><div class="line">X-GitHub-Request-Id: F682:28F28:E2E8C4:F13E12:594B7239</div><div class="line">Content-Length: 6688</div><div class="line">Accept-Ranges: bytes</div><div class="line">Date: Thu, 22 Jun 2017 07:31:06 GMT</div><div class="line">Via: 1.1 varnish</div><div class="line">Age: 0</div><div class="line">Connection: keep-alive</div><div class="line">X-Served-By: cache-nrt6120-NRT</div><div class="line">X-Cache: MISS</div><div class="line">X-Cache-Hits: 0</div><div class="line">X-Timer: S1498116666.909413,VS0,VE213</div><div class="line">Vary: Accept-Encoding</div><div class="line">X-Fastly-Request-ID: aadc9ce160db1f0a3d9b123dede2dcc2e311b549</div></pre></td></tr></table></figure>
+<h1 id="HTTP1-1-协议规范"><a href="#HTTP1-1-协议规范" class="headerlink" title="HTTP1.1 协议规范"></a>HTTP1.1 协议规范</h1><p><a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5" target="_blank" rel="external">http rfc2616</a></p>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

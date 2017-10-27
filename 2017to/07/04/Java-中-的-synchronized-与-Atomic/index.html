@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java 中 的 synchronized 与 Atomic | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Java,atomic,synchronized," />
+  
+
+  <meta name="description" content="123456789101112131415// 代码1public class Sample &amp;#123;  private static int count = 0;  synchronized public static void increment() &amp;#123;    count++;  &amp;#125;&amp;#125;// 代码2public class Sample &amp;#123;  priv">
+<meta name="keywords" content="Java,atomic,synchronized">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 中 的 synchronized 与 Atomic">
+<meta property="og:url" content="https://emacsist.github.io/2017/07/04/Java-中-的-synchronized-与-Atomic/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="123456789101112131415// 代码1public class Sample &amp;#123;  private static int count = 0;  synchronized public static void increment() &amp;#123;    count++;  &amp;#125;&amp;#125;// 代码2public class Sample &amp;#123;  priv">
+<meta property="og:updated_time" content="2017-07-04T09:25:48.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java 中 的 synchronized 与 Atomic">
+<meta name="twitter:description" content="123456789101112131415// 代码1public class Sample &amp;#123;  private static int count = 0;  synchronized public static void increment() &amp;#123;    count++;  &amp;#125;&amp;#125;// 代码2public class Sample &amp;#123;  priv">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#synchronized"><span class="toc-text">synchronized</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Atomic"><span class="toc-text">Atomic</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-Java-中-的-synchronized-与-Atomic" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            Java 中 的 synchronized 与 Atomic
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.07.04</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#Java">
+        <span class="tag-name">Java</span>
+    <span class="tag-size">( 14 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#atomic">
+        <span class="tag-name">atomic</span>
+    <span class="tag-size">( 1 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#synchronized">
+        <span class="tag-name">synchronized</span>
+    <span class="tag-size">( 1 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">// 代码1</div><div class="line">public class Sample &#123;</div><div class="line">  private static int count = 0;</div><div class="line">  synchronized public static void <span class="function"><span class="title">increment</span></span>() &#123;</div><div class="line">    count++;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 代码2</div><div class="line">public class Sample &#123;</div><div class="line">  private static AtomicInteger count = new AtomicInteger(0);</div><div class="line">  public static void <span class="function"><span class="title">increment</span></span>() &#123;</div><div class="line">    count.getAndIncrement();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>虽然它们都可以实现相同的功能，那它们的区别到底是哪里呢？</p>
+<h1 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h1><p>这个是最底层的锁的功能，是Java语言层次的关键字，用来进行同步操作。在使用了 <em>synchronized</em> 的代码块中，所有的线程在执行这段代码的时候，都会变成 <em>串行</em> ，所以也就解决了多线程的问题。</p>
+<h1 id="Atomic"><a href="#Atomic" class="headerlink" title="Atomic"></a>Atomic</h1><p>这种类型使用的是 <em>CAS</em>(Compare And Swap) 机制来进行修改的。这种类型的操作，不会使用锁来进行同步，它只是进行比较然后交换。想象下这种情况:</p>
+<p>线程A：调用 get() ，假设它返回 1<br>线程A：计算它将要修改为新的值，这时期望它变成新值 2<br>（即原值为1，期望值为2）<br>同一时间<br>线程B：调用 get() ，假设它返回 1<br>线程B：计算它将要修改为新的值，这时期望它变成新值 2<br>（即原值为1，期望值为2）</p>
+<blockquote>
+<p>CAS 只有在原值与原来的内存位置的值一样的时候，才会将原来内存位置的值设置为期望值（并且，这一个操作是原子性的，这个是由CPU保证它的原子的）</p>
+</blockquote>
+<p>由于 <em>atomic</em> 的特特性，它只会允许一条线程设置成功，然后另一线设置失败，设置失败的线程，它会继续循环下一轮，直到成功为止。</p>
+<p>假设这一轮是线程A设置成功了，线程B设置失败，所以线程B会继续 get() -&gt; 比较 -&gt; 设置为新的值 ，直到成功为止。所以，这种一般会有个死循环在这里一直尝试直至成功。</p>
+<p>这种 <em>CAS</em> 是由CPU硬件提供的（如果所在平台的CPU并没有提供这种指令的话，那么Java会自行使用自旋来实现它，以达到平台独立的特性）</p>
+<p><a href="https://en.wikipedia.org/wiki/Compare-and-swap" target="_blank" rel="external">wikipedia</a></p>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

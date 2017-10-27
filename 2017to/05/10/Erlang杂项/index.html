@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Erlang杂项 | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="erlang," />
+  
+
+  <meta name="description" content="erlang 启动参数说明+ : 它是 emulator flag 它控制模拟器的行为(即虚拟机)。(emulator flag).可以通过 erlang:system_info(…) 来获取。所有选项名有: system_info - : 这种参数是传递给 runtime system ，特别是 init system 来处理的。可以通过 init:get_argument/1 函数来获取这些参">
+<meta name="keywords" content="erlang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Erlang杂项">
+<meta property="og:url" content="https://emacsist.github.io/2017/05/10/Erlang杂项/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="erlang 启动参数说明+ : 它是 emulator flag 它控制模拟器的行为(即虚拟机)。(emulator flag).可以通过 erlang:system_info(…) 来获取。所有选项名有: system_info - : 这种参数是传递给 runtime system ，特别是 init system 来处理的。可以通过 init:get_argument/1 函数来获取这些参">
+<meta property="og:updated_time" content="2017-08-29T06:55:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Erlang杂项">
+<meta name="twitter:description" content="erlang 启动参数说明+ : 它是 emulator flag 它控制模拟器的行为(即虚拟机)。(emulator flag).可以通过 erlang:system_info(…) 来获取。所有选项名有: system_info - : 这种参数是传递给 runtime system ，特别是 init system 来处理的。可以通过 init:get_argument/1 函数来获取这些参">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#erlang-启动参数说明"><span class="toc-text">erlang 启动参数说明</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#让-Erlang-接受的信号说明"><span class="toc-text">让 Erlang 接受的信号说明</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#环境变量"><span class="toc-text">环境变量</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ERL-CRASH-DUMP"><span class="toc-text">ERL_CRASH_DUMP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ERL-CRASH-DUMP-NICE"><span class="toc-text">ERL_CRASH_DUMP_NICE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ERL-CRASH-DUMP-SECONDS"><span class="toc-text">ERL_CRASH_DUMP_SECONDS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ERL-CRASH-DUMP-BYTES"><span class="toc-text">ERL_CRASH_DUMP_BYTES</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ERL-AFLAGS"><span class="toc-text">ERL_AFLAGS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ERL-ZFLAGS-and-ERL-FLAGS"><span class="toc-text">ERL_ZFLAGS and ERL_FLAGS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ERL-LIBS"><span class="toc-text">ERL_LIBS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ERL-EPMD-ADDRESS"><span class="toc-text">ERL_EPMD_ADDRESS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ERL-EPMD-PORT"><span class="toc-text">ERL_EPMD_PORT</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-Erlang杂项" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            Erlang杂项
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.05.10</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#erlang">
+        <span class="tag-name">erlang</span>
+    <span class="tag-size">( 4 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <h1 id="erlang-启动参数说明"><a href="#erlang-启动参数说明" class="headerlink" title="erlang 启动参数说明"></a>erlang 启动参数说明</h1><p><em>+</em> : 它是 <em>emulator flag</em> 它控制模拟器的行为(即虚拟机)。(emulator flag).可以通过 <em>erlang:system_info(…)</em> 来获取。所有选项名有: <a href="http://erlang.org/doc/man/erlang.html#system_info_allocator_tags" target="_blank" rel="external">system_info</a></p>
+<p><em>-</em> : 这种参数是传递给 <em>runtime system</em> ，特别是 <em>init system</em> 来处理的。可以通过 <em>init:get_argument/1</em> 函数来获取这些参数，<em>init:get_arguments().</em> 会列出所有。 (flag)</p>
+<p><em>plain argument</em> : 它可以出现在第一个 (flag) 之前，或者在 <em>–</em> flag 后面。又或者是 <em>-extra</em> flag 后面。可以通过 <em>init:get_plain_arguments().</em> 来获取</p>
+<h1 id="让-Erlang-接受的信号说明"><a href="#让-Erlang-接受的信号说明" class="headerlink" title="让 Erlang 接受的信号说明"></a>让 Erlang 接受的信号说明</h1><p><em>SIGUSR1</em> ： 它会导致Erlang强制产生一个 crash dump 文件。<br><em>SIGTERM</em> ： 它会产生一个 <em>stop</em> 的消息给 <em>init</em> 进程。即等同于调用 <em>init:stop/0</em><br><em>SIGUSR2</em> ： 它保留Erlang内部使用。</p>
+<h1 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h1><h2 id="ERL-CRASH-DUMP"><a href="#ERL-CRASH-DUMP" class="headerlink" title="ERL_CRASH_DUMP"></a>ERL_CRASH_DUMP</h2><p>这个是 <em>crash_dump</em> 的文件名。如果没设置，它就是在当前目录下的，crash dump 的文件名为 <em>erl_crash.dump</em> </p>
+<h2 id="ERL-CRASH-DUMP-NICE"><a href="#ERL-CRASH-DUMP-NICE" class="headerlink" title="ERL_CRASH_DUMP_NICE"></a>ERL_CRASH_DUMP_NICE</h2><p>当模拟器需要写crash dump文件时，这个值就是该进程的 <em>nice value</em> 。有效范围是 1-39 。数值越大，优先级越低。</p>
+<h2 id="ERL-CRASH-DUMP-SECONDS"><a href="#ERL-CRASH-DUMP-SECONDS" class="headerlink" title="ERL_CRASH_DUMP_SECONDS"></a>ERL_CRASH_DUMP_SECONDS</h2><p>即花费在写 crash dump 文件允许耗时的秒数。当超过了这个秒数，模拟器就会被 <em>SIGALRM</em> 信号终止。</p>
+<p>如果它没有设置，或者设置为0( <em>ERL_CRASH_DUMP_SECONDS=0</em> )，运行时系统甚至不会尝试写 crash dump 文件。它仅仅只是终止掉。<br>如果它为负数，比如 <em>ERL_CRASH_DUMP_SECONDS=-1</em> ，则运行时系统会无限等待，直到 crash dump 文件已经被写到文件了。</p>
+<h2 id="ERL-CRASH-DUMP-BYTES"><a href="#ERL-CRASH-DUMP-BYTES" class="headerlink" title="ERL_CRASH_DUMP_BYTES"></a>ERL_CRASH_DUMP_BYTES</h2><p>crash dump 文件最大的字节数，超出时它会被截断。如果没有设置，则表示没有限制。如果设置为0，则不会尝试写 crash dump 文件。</p>
+<h2 id="ERL-AFLAGS"><a href="#ERL-AFLAGS" class="headerlink" title="ERL_AFLAGS"></a>ERL_AFLAGS</h2><p>这个值的内容，会被添加到 <em>erl</em> 命令行的开头。但如果有 <em>-extra</em> 则比较特殊，这部分要放在该值的结尾，然后它会被放到正式命令行的 <em>-extra</em> 后面。</p>
+<h2 id="ERL-ZFLAGS-and-ERL-FLAGS"><a href="#ERL-ZFLAGS-and-ERL-FLAGS" class="headerlink" title="ERL_ZFLAGS and ERL_FLAGS"></a>ERL_ZFLAGS and ERL_FLAGS</h2><p>这两个环境变量的值，会被追加到 <em>erl</em> 命令行的结尾。同样，如果是含有 <em>-extra</em> 也会特别处理。（同上）</p>
+<h2 id="ERL-LIBS"><a href="#ERL-LIBS" class="headerlink" title="ERL_LIBS"></a>ERL_LIBS</h2><p>它包含额外的库目录，它会被添加到 <em>code path</em> 。</p>
+<h2 id="ERL-EPMD-ADDRESS"><a href="#ERL-EPMD-ADDRESS" class="headerlink" title="ERL_EPMD_ADDRESS"></a>ERL_EPMD_ADDRESS</h2><p>可以设置为逗号分隔的IP地址列表，表示 <em>epmd</em> 进程监听的地址。（loopback 地址是一直会被监听的，无论它有没有显式指明）</p>
+<h2 id="ERL-EPMD-PORT"><a href="#ERL-EPMD-PORT" class="headerlink" title="ERL_EPMD_PORT"></a>ERL_EPMD_PORT</h2><p><em>epmd</em> 进程监听的端口。</p>
+<blockquote>
+<p>注意，在一个集群中的所有节点，它们的 epmd 端口必须是相同的！！！</p>
+</blockquote>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

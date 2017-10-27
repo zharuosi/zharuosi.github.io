@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>https.protocols在Java中的使用 | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="java,log,http,https," />
+  
+
+  <meta name="description" content="Caused by: java.io.EOFException: SSL peer shut down incorrectly在服务器上，发现一个微博爬虫系统偶尔会报这种异常。Google 了下，在 Stackoverflow 上看到相关的回答。所以决定详细了解下这原理。 上面说，明确指定HTTPS的协议版本即可。即：System.setProperty(&amp;quot;https.protocols">
+<meta name="keywords" content="java,log,http,https">
+<meta property="og:type" content="article">
+<meta property="og:title" content="https.protocols在Java中的使用">
+<meta property="og:url" content="https://emacsist.github.io/2017/03/02/https-protocols在Java中的使用/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="Caused by: java.io.EOFException: SSL peer shut down incorrectly在服务器上，发现一个微博爬虫系统偶尔会报这种异常。Google 了下，在 Stackoverflow 上看到相关的回答。所以决定详细了解下这原理。 上面说，明确指定HTTPS的协议版本即可。即：System.setProperty(&amp;quot;https.protocols">
+<meta property="og:updated_time" content="2017-04-28T05:47:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="https.protocols在Java中的使用">
+<meta name="twitter:description" content="Caused by: java.io.EOFException: SSL peer shut down incorrectly在服务器上，发现一个微博爬虫系统偶尔会报这种异常。Google 了下，在 Stackoverflow 上看到相关的回答。所以决定详细了解下这原理。 上面说，明确指定HTTPS的协议版本即可。即：System.setProperty(&amp;quot;https.protocols">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Caused-by-java-io-EOFException-SSL-peer-shut-down-incorrectly"><span class="toc-text">Caused by: java.io.EOFException: SSL peer shut down incorrectly</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HTTPS-的-protocols"><span class="toc-text">HTTPS 的 protocols</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-与-SSL"><span class="toc-text">TLS 与 SSL</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#发展历史"><span class="toc-text">发展历史</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#SSL"><span class="toc-text">SSL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS"><span class="toc-text">TLS</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JDK中对-HTTPS-版本的支持情况"><span class="toc-text">JDK中对 HTTPS 版本的支持情况</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#JDK-6"><span class="toc-text">JDK 6</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JDK-7"><span class="toc-text">JDK 7</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JDK-8"><span class="toc-text">JDK 8</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JSSE"><span class="toc-text">JSSE</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#JSSE-参数调节"><span class="toc-text">JSSE 参数调节</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#查看服务器支持的-HTTPS-协议版本"><span class="toc-text">查看服务器支持的 HTTPS 协议版本</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#解决办法"><span class="toc-text">解决办法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-text">参考资料</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-https-protocols在Java中的使用" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            https.protocols在Java中的使用
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.03.02</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#http">
+        <span class="tag-name">http</span>
+    <span class="tag-size">( 6 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#https">
+        <span class="tag-name">https</span>
+    <span class="tag-size">( 3 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#java">
+        <span class="tag-name">java</span>
+    <span class="tag-size">( 116 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#log">
+        <span class="tag-name">log</span>
+    <span class="tag-size">( 5 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <h1 id="Caused-by-java-io-EOFException-SSL-peer-shut-down-incorrectly"><a href="#Caused-by-java-io-EOFException-SSL-peer-shut-down-incorrectly" class="headerlink" title="Caused by: java.io.EOFException: SSL peer shut down incorrectly"></a>Caused by: java.io.EOFException: SSL peer shut down incorrectly</h1><p>在服务器上，发现一个微博爬虫系统偶尔会报这种异常。Google 了下，在 <a href="http://stackoverflow.com/questions/28908835/ssl-peer-shut-down-incorrectly-in-java" target="_blank" rel="external">Stackoverflow</a> 上看到相关的回答。所以决定详细了解下这原理。</p>
+<p>上面说，明确指定HTTPS的协议版本即可。即：<code>System.setProperty(&quot;https.protocols&quot;, &quot;TLSv1.1&quot;)</code></p>
+<h1 id="HTTPS-的-protocols"><a href="#HTTPS-的-protocols" class="headerlink" title="HTTPS 的 protocols"></a>HTTPS 的 protocols</h1><p>查看维基百科，关于 HTTPS 的介绍可知：</p>
+<blockquote>
+<p>严格地讲，HTTPS并不是一个单独的协议，而是对工作在一加密连接（TLS或SSL）上的常规HTTP协议的称呼。</p>
+</blockquote>
+<h2 id="TLS-与-SSL"><a href="#TLS-与-SSL" class="headerlink" title="TLS 与 SSL"></a>TLS 与 SSL</h2><p><em>SSL</em> 是 <em>TLS</em> 的前身。<em>SSL</em> 是 <em>Netscape</em> 公司推出的 <em>HTTPS</em> 协议，以 <em>SSL</em> 进行加密。</p>
+<p><em>IETF</em> 将 <em>SSL</em> 进行标准化，公布了第一版的 <em>TLS</em> 标准文件。</p>
+<h1 id="发展历史"><a href="#发展历史" class="headerlink" title="发展历史"></a>发展历史</h1><h2 id="SSL"><a href="#SSL" class="headerlink" title="SSL"></a>SSL</h2><ul>
+<li>1.0 没有公开过</li>
+<li>2.0 1995年2月发布</li>
+<li>3.0 1996年发布。2014年10月，Google 发现 SSL 3.0 设计缺陷，建议禁用此一协议。</li>
+</ul>
+<h2 id="TLS"><a href="#TLS" class="headerlink" title="TLS"></a>TLS</h2><p><em>IETF</em> 将SSL标准化，并称为 <em>TLS</em>. <em>TLS1.0</em> 与 <em>SSL 3.0</em> 的差异非常小。</p>
+<ul>
+<li>1.0</li>
+<li>1.1 2006</li>
+<li>1.2 2008</li>
+<li>1.3 2016 </li>
+</ul>
+<h1 id="JDK中对-HTTPS-版本的支持情况"><a href="#JDK中对-HTTPS-版本的支持情况" class="headerlink" title="JDK中对 HTTPS 版本的支持情况"></a>JDK中对 HTTPS 版本的支持情况</h1><h2 id="JDK-6"><a href="#JDK-6" class="headerlink" title="JDK 6"></a>JDK 6</h2><ul>
+<li>SSL v3</li>
+<li>TLS v1(默认)</li>
+<li>TLS v1.1(JDK6 update 111 及以上)</li>
+</ul>
+<h2 id="JDK-7"><a href="#JDK-7" class="headerlink" title="JDK 7"></a>JDK 7</h2><ul>
+<li>SSLv3</li>
+<li>TLS v1(默认)</li>
+<li>TLS v1.1</li>
+<li>TLS v1.2</li>
+</ul>
+<h2 id="JDK-8"><a href="#JDK-8" class="headerlink" title="JDK 8"></a>JDK 8</h2><ul>
+<li>SSL v3</li>
+<li>TLS v1</li>
+<li>TLS v1.1</li>
+<li>TLS v1.2(默认)</li>
+</ul>
+<h1 id="JSSE"><a href="#JSSE" class="headerlink" title="JSSE"></a>JSSE</h1><p>JSSE（Java Security Socket Extension），它实现了SSL和TSL（传输层安全）协议。</p>
+<h2 id="JSSE-参数调节"><a href="#JSSE-参数调节" class="headerlink" title="JSSE 参数调节"></a>JSSE 参数调节</h2><ul>
+<li><code>javax.net.debug</code> ：打印连接的详细信息。例如 <code>-Djavax.net.debug=all</code> 或者 <code>-Djavax.net.debug=ssl:handshake:verbose</code></li>
+<li><code>https.protocols</code> ：控制使用 Java 客户端通过 <code>HttpsURLConnection</code> 或 <code>URL.openStream()</code> 操作的协议版本。例如 <code>-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2</code>. 对于非HTTP协议，可以通过 <code>SocketFactory&#39;s SSLContext</code> 来控制 。</li>
+<li><code>jdk.tls.client.protocols</code> ：控制底层平台的TLS实现。例如 <code>-Djdk.tls.client.protocols=TLSv1.1,TLSv1.2</code></li>
+<li><code>http.agent</code> ：当初始化连接时，Java会使用这个作为 <code>user-agent</code> 的字符串。例如: <code>-Dhttp.agent=&quot;known agent&quot;</code></li>
+<li><code>java.net.useSystemProxies</code> ：使用系统本身的代理： <code>-Djava.net.useSystemProxies=true</code></li>
+<li><code>http.proxyHost</code> 和 <code>http.proxyPort</code> : 使用HTTP协议时的代理。例如: <code>-Dhttp.proxyHost=proxy.example.com -Dhttp.proxyPort=8080</code></li>
+<li><code>https.proxyHost</code> 和 <code>https.proxyPort</code> : 和上面一样，区别只是 HTTP 和 HTTPS</li>
+<li><code>http.proxyUser</code>,<code>http.proxyPassword</code>, <code>https.proxyUser</code>,<code>https.proxyPassword</code> : 认证用户名和密码。</li>
+</ul>
+<h1 id="查看服务器支持的-HTTPS-协议版本"><a href="#查看服务器支持的-HTTPS-协议版本" class="headerlink" title="查看服务器支持的 HTTPS 协议版本"></a>查看服务器支持的 HTTPS 协议版本</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nmap --script ssl-enum-ciphers -p 443 api.weibo.com</div></pre></td></tr></table></figure>
+<p>返回的结果为:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">Starting Nmap 7.40 ( https://nmap.org ) at 2017-03-02 14:18 CST</div><div class="line">Nmap scan report <span class="keyword">for</span> api.weibo.com (180.149.135.176)</div><div class="line">Host is up (0.039s latency).</div><div class="line">Other addresses <span class="keyword">for</span> api.weibo.com (not scanned): 180.149.135.230</div><div class="line">PORT    STATE SERVICE</div><div class="line">443/tcp open  https</div><div class="line">| ssl-enum-ciphers:</div><div class="line">|   SSLv3:</div><div class="line">|     ciphers:</div><div class="line">|       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_CAMELLIA_256_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_SEED_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_CAMELLIA_128_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_IDEA_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_RC4_128_SHA (rsa 2048) - C</div><div class="line">|       TLS_RSA_WITH_3DES_EDE_CBC_SHA (rsa 2048) - C</div><div class="line">|       TLS_RSA_WITH_DES_CBC_SHA (rsa 2048) - C</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_256_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_128_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA (secp256r1) - C</div><div class="line">|       TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA (dh 1024) - D</div><div class="line">|     compressors:</div><div class="line">|       NULL</div><div class="line">|     cipher preference: server</div><div class="line">|     warnings:</div><div class="line">|       64-bit block cipher 3DES vulnerable to SWEET32 attack</div><div class="line">|       64-bit block cipher DES vulnerable to SWEET32 attack</div><div class="line">|       64-bit block cipher IDEA vulnerable to SWEET32 attack</div><div class="line">|       Broken cipher RC4 is deprecated by RFC 7465</div><div class="line">|       CBC-mode cipher <span class="keyword">in</span> SSLv3 (CVE-2014-3566)</div><div class="line">|       Key exchange (dh 1024) of lower strength than certificate key</div><div class="line">|   TLSv1.0:</div><div class="line">|     ciphers:</div><div class="line">|       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_CAMELLIA_256_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_SEED_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_CAMELLIA_128_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_IDEA_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_RC4_128_SHA (rsa 2048) - C</div><div class="line">|       TLS_RSA_WITH_3DES_EDE_CBC_SHA (rsa 2048) - C</div><div class="line">|       TLS_RSA_WITH_DES_CBC_SHA (rsa 2048) - C</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_256_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_128_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA (secp256r1) - C</div><div class="line">|       TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA (dh 1024) - D</div><div class="line">|     compressors:</div><div class="line">|       NULL</div><div class="line">|     cipher preference: server</div><div class="line">|     warnings:</div><div class="line">|       64-bit block cipher 3DES vulnerable to SWEET32 attack</div><div class="line">|       64-bit block cipher DES vulnerable to SWEET32 attack</div><div class="line">|       64-bit block cipher IDEA vulnerable to SWEET32 attack</div><div class="line">|       Broken cipher RC4 is deprecated by RFC 7465</div><div class="line">|       Key exchange (dh 1024) of lower strength than certificate key</div><div class="line">|   TLSv1.1:</div><div class="line">|     ciphers:</div><div class="line">|       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_CAMELLIA_256_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_SEED_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_CAMELLIA_128_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_IDEA_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_RC4_128_SHA (rsa 2048) - C</div><div class="line">|       TLS_RSA_WITH_3DES_EDE_CBC_SHA (rsa 2048) - C</div><div class="line">|       TLS_RSA_WITH_DES_CBC_SHA (rsa 2048) - C</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_256_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_128_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA (secp256r1) - C</div><div class="line">|       TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA (dh 1024) - D</div><div class="line">|     compressors:</div><div class="line">|       NULL</div><div class="line">|     cipher preference: server</div><div class="line">|     warnings:</div><div class="line">|       64-bit block cipher 3DES vulnerable to SWEET32 attack</div><div class="line">|       64-bit block cipher DES vulnerable to SWEET32 attack</div><div class="line">|       64-bit block cipher IDEA vulnerable to SWEET32 attack</div><div class="line">|       Broken cipher RC4 is deprecated by RFC 7465</div><div class="line">|       Key exchange (dh 1024) of lower strength than certificate key</div><div class="line">|   TLSv1.2:</div><div class="line">|     ciphers:</div><div class="line">|       TLS_RSA_WITH_AES_256_GCM_SHA384 (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_AES_256_CBC_SHA256 (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_CAMELLIA_256_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_AES_128_GCM_SHA256 (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_AES_128_CBC_SHA256 (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_SEED_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_CAMELLIA_128_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_IDEA_CBC_SHA (rsa 2048) - A</div><div class="line">|       TLS_RSA_WITH_RC4_128_SHA (rsa 2048) - C</div><div class="line">|       TLS_RSA_WITH_3DES_EDE_CBC_SHA (rsa 2048) - C</div><div class="line">|       TLS_RSA_WITH_DES_CBC_SHA (rsa 2048) - C</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (secp256r1) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384 (secp256r1) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_256_GCM_SHA384 (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_256_CBC_SHA256 (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_256_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (secp256r1) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 (secp256r1) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_128_CBC_SHA256 (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_AES_128_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA (dh 1024) - A</div><div class="line">|       TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA (secp256r1) - C</div><div class="line">|       TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA (dh 1024) - D</div><div class="line">|     compressors:</div><div class="line">|       NULL</div><div class="line">|     cipher preference: server</div><div class="line">|     warnings:</div><div class="line">|       64-bit block cipher 3DES vulnerable to SWEET32 attack</div><div class="line">|       64-bit block cipher DES vulnerable to SWEET32 attack</div><div class="line">|       64-bit block cipher IDEA vulnerable to SWEET32 attack</div><div class="line">|       Broken cipher RC4 is deprecated by RFC 7465</div><div class="line">|       Key exchange (dh 1024) of lower strength than certificate key</div><div class="line">|_  least strength: D</div><div class="line"></div><div class="line">Nmap <span class="keyword">done</span>: 1 IP address (1 host up) scanned <span class="keyword">in</span> 10.99 seconds</div></pre></td></tr></table></figure>
+<p>可知，它支持的协议有:</p>
+<ul>
+<li>SSLv3</li>
+<li>TLSv1.0</li>
+<li>TLSv1.1</li>
+<li>TLSv1.2</li>
+</ul>
+<h1 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h1><p>服务器为Linux + JDK7 + 64位。添加</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">System.setProperty(<span class="string">"https.protocols"</span>, <span class="string">"TLSv1.2"</span>);</div></pre></td></tr></table></figure>
+<p>在爬虫爬取数据时，就没有报这类似的异常了。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><p><a href="https://blogs.oracle.com/java-platform-group/entry/diagnosing_tls_ssl_and_https" target="_blank" rel="external">Oracle 上关于 https.protocols 的文档</a></p>
+</li>
+<li><p><a href="https://zh.wikipedia.org/wiki/%E5%82%B3%E8%BC%B8%E5%B1%A4%E5%AE%89%E5%85%A8%E5%8D%94%E8%AD%B0" target="_blank" rel="external">wiki</a></p>
+</li>
+</ul>
+
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
