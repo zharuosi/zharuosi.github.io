@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>HashMap Vs. ConcurrentHashMap Vs. SynchronizedMap – 如何在Java中同步HashMap | emacsist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="java,map," />
+  
+
+  <meta name="description" content="原文  HashMap 在Java中是一种非常强大的数据结构。我们会经常使用它并且在绝大多数的应用中都会使用到它。这里有一些我之前写的例子: 如何实现线程安全的缓存 , 如何转换 HashMap 为 ArrayList? 在上面的例子中，我们都使用了 HashMap，但这些是相当简单的 HashMap 的用法。 HashMap 是一个非同步 的集合类。 你有过以下的问题吗？ ConcurrentH">
+<meta name="keywords" content="java,map">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HashMap Vs. ConcurrentHashMap Vs. SynchronizedMap – 如何在Java中同步HashMap">
+<meta property="og:url" content="https://emacsist.github.io/2017/10/10/HashMap-Vs-ConcurrentHashMap-Vs-SynchronizedMap-–-如何在Java中同步HashMap/index.html">
+<meta property="og:site_name" content="emacsist">
+<meta property="og:description" content="原文  HashMap 在Java中是一种非常强大的数据结构。我们会经常使用它并且在绝大多数的应用中都会使用到它。这里有一些我之前写的例子: 如何实现线程安全的缓存 , 如何转换 HashMap 为 ArrayList? 在上面的例子中，我们都使用了 HashMap，但这些是相当简单的 HashMap 的用法。 HashMap 是一个非同步 的集合类。 你有过以下的问题吗？ ConcurrentH">
+<meta property="og:image" content="https://emacsist.github.io/2017/10/10/HashMap-Vs-ConcurrentHashMap-Vs-SynchronizedMap-–-如何在Java中同步HashMap/quiver-image-url/A59815F10DC305E6B630DB6CD0E6F0A6.jpg%20=1454x698">
+<meta property="og:updated_time" content="2017-10-10T07:06:47.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HashMap Vs. ConcurrentHashMap Vs. SynchronizedMap – 如何在Java中同步HashMap">
+<meta name="twitter:description" content="原文  HashMap 在Java中是一种非常强大的数据结构。我们会经常使用它并且在绝大多数的应用中都会使用到它。这里有一些我之前写的例子: 如何实现线程安全的缓存 , 如何转换 HashMap 为 ArrayList? 在上面的例子中，我们都使用了 HashMap，但这些是相当简单的 HashMap 的用法。 HashMap 是一个非同步 的集合类。 你有过以下的问题吗？ ConcurrentH">
+<meta name="twitter:image" content="https://emacsist.github.io/2017/10/10/HashMap-Vs-ConcurrentHashMap-Vs-SynchronizedMap-–-如何在Java中同步HashMap/quiver-image-url/A59815F10DC305E6B630DB6CD0E6F0A6.jpg%20=1454x698">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbe6" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b870e52c6cd914cb42627e4a706700b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+  
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header LEFT">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tags/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/books/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            阅读
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#你有过以下的问题吗？"><span class="toc-text">你有过以下的问题吗？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Why"><span class="toc-text">Why ?</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#How-？"><span class="toc-text">How ？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#ConcurrentHashMap"><span class="toc-text">ConcurrentHashMap</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SynchronizedHashMap"><span class="toc-text">SynchronizedHashMap</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#现在让我们看一下代码"><span class="toc-text">现在让我们看一下代码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结果"><span class="toc-text">结果</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post LEFT">
+   <article id="post-HashMap-Vs-ConcurrentHashMap-Vs-SynchronizedMap-–-如何在Java中同步HashMap" class="article article-type-post" itemprop="blogPost">
+    <header class="article-header">
+        <h1 class="post-title">
+            HashMap Vs. ConcurrentHashMap Vs. SynchronizedMap – 如何在Java中同步HashMap
+        </h1>
+
+        <div class="article-meta">
+            <span>
+        <i class="icon-calendar"></i>
+        <span>2017.10.10</span>
+            </span>
+
+            
+                <span class="article-author">
+          <i class="icon-user"></i>
+          <span>emacsist</span>
+                </span>
+                
+
+                    
+    <span class="article-category">
+    <i class="icon-list"></i>
+    
+      <a class="tag-item" href="/tags/#java">
+        <span class="tag-name">java</span>
+    <span class="tag-size">( 116 )</span>
+    </a>
+    
+      <a class="tag-item" href="/tags/#map">
+        <span class="tag-name">map</span>
+    <span class="tag-size">( 1 )</span>
+    </a>
+    
+
+        </span>
+        
+
+                        
+
+                                
+
+                                        
+
+        </div>
+    </header>
+
+    <div class="article-content">
+        
+                            <p><a href="http://crunchify.com/hashmap-vs-concurrenthashmap-vs-synchronizedmap-how-a-hashmap-can-be-synchronized-in-java/" target="_blank" rel="external">原文</a></p>
+<p><img src="quiver-image-url/A59815F10DC305E6B630DB6CD0E6F0A6.jpg =1454x698" alt="IMAGE"></p>
+<p><code>HashMap</code> 在Java中是一种非常强大的数据结构。我们会经常使用它并且在绝大多数的应用中都会使用到它。这里有一些我之前写的例子: <a href="http://crunchify.com/implement-simple-threadsafe-cache-using-hashmap-without-using-synchronized-collection/" target="_blank" rel="external">如何实现线程安全的缓存</a> , <a href="http://crunchify.com/how-to-convert-hashmap-to-arraylist-in-java/" target="_blank" rel="external">如何转换 HashMap 为 ArrayList?</a></p>
+<p>在上面的例子中，我们都使用了 <code>HashMap</code>，但这些是相当简单的 <code>HashMap</code> 的用法。 <code>HashMap 是一个非同步</code> 的集合类。</p>
+<h1 id="你有过以下的问题吗？"><a href="#你有过以下的问题吗？" class="headerlink" title="你有过以下的问题吗？"></a>你有过以下的问题吗？</h1><ul>
+<li><code>ConcurrentHashMap</code> 和 <code>Collections.synchronizedMap(Map)</code> 之间的区别是什么？</li>
+<li><code>ConcurrentHashMap</code> 和 <code>Collections.synchronizedMap(Map)</code> 之间的性能差别如何？</li>
+<li><code>ConcurrentHashMap vs Collections.synchronizedMap()</code></li>
+<li>常见的 <code>HashMap</code> 和 <code>ConcurrentHashMap</code> 的面试题</li>
+</ul>
+<p>这本教程中，我们将覆盖以上所有的疑问以及为什么和如何同步 <code>HashMap</code> 的原因？</p>
+<h1 id="Why"><a href="#Why" class="headerlink" title="Why ?"></a>Why ?</h1><p><code>Map</code> 对象是一个存储元素的关联的容器，通过唯一标识的 <code>key</code> 和映射的 <code>value</code> 组成。如果你有一个非常高并发的应用，你可能想在不同的线程中修改或读取键值，那么理想的情况下是使用并发的 <code>HashMap</code> 。最典型的例子就是生产者和消费者的读写处理。</p>
+<p>所以，线程安全的 <code>Map</code> 意味着什么？如果 <code>多线程</code> 并发地访问一个 <code>hash map</code>，并且至少有一条线程修改 <code>map</code> 的结构，它 <code>必须在外部被同步</code>，以免视图内容不一致。</p>
+<h1 id="How-？"><a href="#How-？" class="headerlink" title="How ？"></a>How ？</h1><p>有两种方式可以同步 <code>HashMap</code></p>
+<ol>
+<li>Java 中的 <code>Collections.synchronizedMap()</code> 方法</li>
+<li>使用 <code>ConcurrentHashMap</code></li>
+</ol>
+<p>HashMap Vs. synchronizedMap Vs. ConcurrentHashMap</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//Hashtable</span></div><div class="line">Map&lt;String, String&gt; normalMap = <span class="keyword">new</span> Hashtable&lt;String, String&gt;();</div><div class="line"> </div><div class="line"><span class="comment">//synchronizedMap</span></div><div class="line">synchronizedHashMap = Collections.synchronizedMap(<span class="keyword">new</span> HashMap&lt;String, String&gt;());</div><div class="line"> </div><div class="line"><span class="comment">//ConcurrentHashMap</span></div><div class="line">concurrentHashMap = <span class="keyword">new</span> ConcurrentHashMap&lt;String, String&gt;();</div></pre></td></tr></table></figure>
+<h1 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h1><ul>
+<li>当在你的项目中需要非常高并发的时候，你应该使用 <code>ConcurrentHashMap</code></li>
+<li>它是线程安全的，并且不需要同步整个 <code>Map</code></li>
+<li>读是非常快的，而写是通过锁的</li>
+<li>没有在 <code>object</code> 级别的锁</li>
+<li>锁在 <code>HashMap</code> 的 <code>bucket</code> 级别具有更精细的粒度</li>
+<li>如果一个线程尝试修改 <code>ConcurrentHashMap</code>，而另一个线程正在迭代它，则 <code>ConcurrentHashMap</code> 不会抛出 <code>ConcurrentModificationException</code> 异常。</li>
+<li><code>ConcurrentHashMap</code> 使用多个锁</li>
+</ul>
+<h1 id="SynchronizedHashMap"><a href="#SynchronizedHashMap" class="headerlink" title="SynchronizedHashMap"></a>SynchronizedHashMap</h1><ul>
+<li>在 <code>Object</code> 级别的锁</li>
+<li>每次的 读/写 操作都要求获得锁</li>
+<li>锁定整个集合是一个性能的开销</li>
+<li>这本质上只允许一条线程访问整个 <code>Map</code> 并且会阻塞所有其他的线程</li>
+<li>它可能会引起争议</li>
+<li><code>SynchronizedHashMap</code> 返回 <code>Iterator</code> ，它会在并发修改时失败</li>
+</ul>
+<h1 id="现在让我们看一下代码"><a href="#现在让我们看一下代码" class="headerlink" title="现在让我们看一下代码"></a>现在让我们看一下代码</h1><ol>
+<li>创建类 <code>CrunchifyConcurrentHashMapVsSynchronizedHashMap.java</code></li>
+<li>为每个 <code>HashTable</code> 、<code>SynchronizedMap</code> 和 <code>CrunchifyConcurrentHashMap</code> 创建一个对象</li>
+<li>从 <code>Map</code> 中添加和检索 500K 个条目</li>
+<li>压测开始和结束时间并用毫秒显示</li>
+<li>我们将使用 <a href="http://crunchify.com/how-to-run-multiple-threads-concurrently-in-java-executorservice-approach/" target="_blank" rel="external">ExecutorService</a> 来并行地执行5条线程</li>
+</ol>
+<p><code>CrunchifyConcurrentHashMapVsSynchronizedMap.java</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> crunchify.com.tutorials;</div><div class="line"> </div><div class="line"><span class="keyword">import</span> java.util.Collections;</div><div class="line"><span class="keyword">import</span> java.util.HashMap;</div><div class="line"><span class="keyword">import</span> java.util.Hashtable;</div><div class="line"><span class="keyword">import</span> java.util.Map;</div><div class="line"><span class="keyword">import</span> java.util.concurrent.ConcurrentHashMap;</div><div class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</div><div class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</div><div class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</div><div class="line"> </div><div class="line"><span class="comment">/**</span></div><div class="line"> * <span class="doctag">@author</span> Crunchify.com</div><div class="line"> *</div><div class="line"> */</div><div class="line"> </div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CrunchifyConcurrentHashMapVsSynchronizedMap</span> </span>&#123;</div><div class="line"> </div><div class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">int</span> THREAD_POOL_SIZE = <span class="number">5</span>;</div><div class="line"> </div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Map&lt;String, Integer&gt; crunchifyHashTableObject = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Map&lt;String, Integer&gt; crunchifySynchronizedMapObject = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Map&lt;String, Integer&gt; crunchifyConcurrentHashMapObject = <span class="keyword">null</span>;</div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line"> </div><div class="line">        <span class="comment">// Test with Hashtable Object</span></div><div class="line">        crunchifyHashTableObject = <span class="keyword">new</span> Hashtable&lt;String, Integer&gt;();</div><div class="line">        crunchifyPerformTest(crunchifyHashTableObject);</div><div class="line"> </div><div class="line">        <span class="comment">// Test with synchronizedMap Object</span></div><div class="line">        crunchifySynchronizedMapObject = Collections.synchronizedMap(<span class="keyword">new</span> HashMap&lt;String, Integer&gt;());</div><div class="line">        crunchifyPerformTest(crunchifySynchronizedMapObject);</div><div class="line"> </div><div class="line">        <span class="comment">// Test with ConcurrentHashMap Object</span></div><div class="line">        crunchifyConcurrentHashMapObject = <span class="keyword">new</span> ConcurrentHashMap&lt;String, Integer&gt;();</div><div class="line">        crunchifyPerformTest(crunchifyConcurrentHashMapObject);</div><div class="line"> </div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">crunchifyPerformTest</span><span class="params">(<span class="keyword">final</span> Map&lt;String, Integer&gt; crunchifyThreads)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line"> </div><div class="line">        System.out.println(<span class="string">"Test started for: "</span> + crunchifyThreads.getClass());</div><div class="line">        <span class="keyword">long</span> averageTime = <span class="number">0</span>;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</div><div class="line"> </div><div class="line">            <span class="keyword">long</span> startTime = System.nanoTime();</div><div class="line">            ExecutorService crunchifyExServer = Executors.newFixedThreadPool(THREAD_POOL_SIZE);</div><div class="line"> </div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; THREAD_POOL_SIZE; j++) &#123;</div><div class="line">                crunchifyExServer.execute(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                    <span class="meta">@SuppressWarnings</span>(<span class="string">"unused"</span>)</div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line"> </div><div class="line">                        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">500000</span>; i++) &#123;</div><div class="line">                            Integer crunchifyRandomNumber = (<span class="keyword">int</span>) Math.ceil(Math.random() * <span class="number">550000</span>);</div><div class="line"> </div><div class="line">                            <span class="comment">// Retrieve value. We are not using it anywhere</span></div><div class="line">                            Integer crunchifyValue = crunchifyThreads.get(String.valueOf(crunchifyRandomNumber));</div><div class="line"> </div><div class="line">                            <span class="comment">// Put value</span></div><div class="line">                            crunchifyThreads.put(String.valueOf(crunchifyRandomNumber), crunchifyRandomNumber);</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">            &#125;</div><div class="line"> </div><div class="line">            <span class="comment">// Make sure executor stops</span></div><div class="line">            crunchifyExServer.shutdown();</div><div class="line"> </div><div class="line">            <span class="comment">// Blocks until all tasks have completed execution after a shutdown request</span></div><div class="line">            crunchifyExServer.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);</div><div class="line"> </div><div class="line">            <span class="keyword">long</span> entTime = System.nanoTime();</div><div class="line">            <span class="keyword">long</span> totalTime = (entTime - startTime) / <span class="number">1000000L</span>;</div><div class="line">            averageTime += totalTime;</div><div class="line">            System.out.println(<span class="string">"2500K entried added/retrieved in "</span> + totalTime + <span class="string">" ms"</span>);</div><div class="line">        &#125;</div><div class="line">        System.out.println(<span class="string">"For "</span> + crunchifyThreads.getClass() + <span class="string">" the average time is "</span> + averageTime / <span class="number">5</span> + <span class="string">" ms\n"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h1><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">Test started for: class java.util.Hashtable</div><div class="line">500K entried added/retrieved in 1432 ms</div><div class="line">500K entried added/retrieved in 1425 ms</div><div class="line">500K entried added/retrieved in 1373 ms</div><div class="line">500K entried added/retrieved in 1369 ms</div><div class="line">500K entried added/retrieved in 1438 ms</div><div class="line">For class java.util.Hashtable the average time 1407 ms</div><div class="line"> </div><div class="line">Test started for: class java.util.Collections$SynchronizedMap</div><div class="line">500K entried added/retrieved in 1431 ms</div><div class="line">500K entried added/retrieved in 1460 ms</div><div class="line">500K entried added/retrieved in 1387 ms</div><div class="line">500K entried added/retrieved in 1456 ms</div><div class="line">500K entried added/retrieved in 1406 ms</div><div class="line">For class java.util.Collections$SynchronizedMap the average time 1428 ms</div><div class="line"> </div><div class="line">Test started for: class java.util.concurrent.ConcurrentHashMap</div><div class="line">500K entried added/retrieved in 413 ms</div><div class="line">500K entried added/retrieved in 351 ms</div><div class="line">500K entried added/retrieved in 427 ms</div><div class="line">500K entried added/retrieved in 337 ms</div><div class="line">500K entried added/retrieved in 339 ms</div><div class="line">For class java.util.concurrent.ConcurrentHashMap the average time 373 ms  <span class="tag">&lt;<span class="name">==</span> <span class="attr">Much</span> <span class="attr">faster</span></span></div></pre></td></tr></table></figure>
+                                
+    </div>
+</article>
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持 emacsist</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/img/wxpay.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/img/alipay.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tags/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/books/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              阅读
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+
+
+
+    
+
+    
+	
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
