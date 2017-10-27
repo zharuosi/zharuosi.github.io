@@ -1,2 +1,0 @@
-# Ruosi Zha
-Resume
