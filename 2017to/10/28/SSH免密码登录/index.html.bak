@@ -62,60 +62,65 @@
         </ul>
       </div>
     </div>
-    <div id="toc" class="toc-article"> <strong class="toc-title">文章目录</strong>
+    <div id="toc" class="toc-article"> <strong class="toc-title">Outline</strong>
       <ol class="toc">
-        <li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%A0%E6%9C%89%E8%BF%87%E4%BB%A5%E4%B8%8B%E7%9A%84%E9%97%AE%E9%A2%98%E5%90%97%EF%BC%9F"><span
-              class="toc-text">你有过以下的问题吗？</span></a></li>
-        <li class="toc-item toc-level-1"><a class="toc-link" href="#Why"><span class="toc-text">Why
-              ?</span></a></li>
-        <li class="toc-item toc-level-1"><a class="toc-link" href="#How-%EF%BC%9F"><span
-              class="toc-text">How ？</span></a></li>
-        <li class="toc-item toc-level-1"><a class="toc-link" href="#ConcurrentHashMap"><span
-              class="toc-text">ConcurrentHashMap</span></a></li>
-        <li class="toc-item toc-level-1"><a class="toc-link" href="#SynchronizedHashMap"><span
-              class="toc-text">SynchronizedHashMap</span></a></li>
-        <li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%B0%E5%9C%A8%E8%AE%A9%E6%88%91%E4%BB%AC%E7%9C%8B%E4%B8%80%E4%B8%8B%E4%BB%A3%E7%A0%81"><span
-              class="toc-text">现在让我们看一下代码</span></a></li>
-        <li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C"><span
-              class="toc-text">结果</span></a></li>
+        <li class="toc-item toc-level-1"><a class="toc-link" href="#what"><span
+              class="toc-text">SSH是什么</span></a></li>
+        <li class="toc-item toc-level-1"><a class="toc-link" href="#use"><span class="toc-text">使
+              用SSH登录远程主机</span></a></li>
+        <li class="toc-item toc-level-1"><a class="toc-link" href="#how"><span class="toc-text">设
+              置SSH免密码登录</span></a></li>
       </ol>
     </div>
     <div class="content content-post LEFT">
       <article id="post-HashMap-Vs-ConcurrentHashMap-Vs-SynchronizedMap-–-如何在Java中同步HashMap"
         class="article article-type-post" itemprop="blogPost">
         <header class="article-header">
-          <h1 class="post-title"> A Test blog </h1>
-          <div class="article-meta"> <span> <i class="icon-calendar"></i> <span>2017.10.10</span>
+          <h1 class="post-title"> SSH免密码登录 </h1>
+          <div class="article-meta"> <span> <i class="icon-calendar"></i> <span>2017.10.28</span>
             </span> <span class="article-author"> <i class="icon-user"></i> <span>Ruosi
                 Zha</span> </span> <span class="article-category"> <i class="icon-list"></i>
-              <a class="tag-item" href="/tags/#java"> <span class="tag-name">java</span>
-                <span class="tag-size">( 116 )</span> </a> <a class="tag-item"
-                href="/tags/#map"> <span class="tag-name">map</span> <span class="tag-size">(
-                  1 )</span> </a> </span> </div>
+              <a class="tag-item" href="/tags/#Linux"> <span class="tag-name">Linux</span>
+                <span class="tag-size">( 1 )</span> </a> <a class="tag-item" href="/tags/#SSH">
+                <span class="tag-name">SSH</span> <span class="tag-size">( 1 )</span>
+              </a> </span> </div>
         </header>
-        <div class="article-content">
-          <p><a href="http://crunchify.com/hashmap-vs-concurrenthashmap-vs-synchronizedmap-how-a-hashmap-can-be-synchronized-in-java/"
-              target="_blank" rel="external">原文</a></p>
-          <p><img src="quiver-image-url/A59815F10DC305E6B630DB6CD0E6F0A6.jpg%20=1454x698"
-              alt="IMAGE"></p>
-          <p><code>HashMap</code>
-            在Java中是一种非常强大的数据结构。我们会经常使用它并且在绝大多数的应用中都会使用到它。这里有一些我之前写的例子: <a href="http://crunchify.com/implement-simple-threadsafe-cache-using-hashmap-without-using-synchronized-collection/"
-              target="_blank" rel="external">如何实现线程安全的缓存</a> , <a href="http://crunchify.com/how-to-convert-hashmap-to-arraylist-in-java/"
-              target="_blank" rel="external">如何转换 HashMap 为 ArrayList?</a></p>
-          <p>在上面的例子中，我们都使用了 <code>HashMap</code>，但这些是相当简单的 <code>HashMap</code>
-            的用法。 <code>HashMap 是一个非同步</code> 的集合类。</p>
-          <h1 id="你有过以下的问题吗？"><a href="#%E4%BD%A0%E6%9C%89%E8%BF%87%E4%BB%A5%E4%B8%8B%E7%9A%84%E9%97%AE%E9%A2%98%E5%90%97%EF%BC%9F"
-              class="headerlink" title="你有过以下的问题吗？"></a>你有过以下的问题吗？</h1>
+        <div class="article-content"><br>
+          <p> 本文介绍如何使用SSH进行远程登录以及设置SSH免密码登录。 </p>
+          <h1 id="what"><a href="#what" class="headerlink" title="什么是SSH"></a>什么是SSH</h1>
+          <p>首先简单介绍一下SSH(Secure Shell)。
+            SSH是一个用于计算机间的远程登录会话和其他网络服务的加密网络安全协议，由互联网工程任务组 IETF(Internet
+            Engineering Task Force)的网络工作小組（Network Working Group）所制定。相对于传统的网络服务，
+            如FTP、 POP等， SSH协议避免了使用明文传输数据，帐号和口令，可以有效防止信息泄漏和中间人攻击，也能够防止DNS欺骗和IP欺骗。
+            其具体工作原理本文不作详述。 <a href="https://en.wikipedia.org/wiki/Secure_Shell"
+              target="_blank" rel="external">Wikipedia</a></p>
+          <h1 id="use"><a href="#use" class="headerlink" title="使用SSH登录远程主机"></a>使
+            用SSH登录远程主机</h1>
           <ul>
-            <li><code>ConcurrentHashMap</code> 和 <code>Collections.synchronizedMap(Map)</code>
-              之间的区别是什么？</li>
-            <li><code>ConcurrentHashMap</code> 和 <code>Collections.synchronizedMap(Map)</code>
-              之间的性能差别如何？</li>
-            <li><code>ConcurrentHashMap vs Collections.synchronizedMap()</code></li>
-            <li>常见的 <code>HashMap</code> 和 <code>ConcurrentHashMap</code> 的面试题</li>
+            <li>安装openSSH</li>
+            <p>
+              本机： <code>sudo apt-get install openssh-client</code>
+              <br>
+              远程服务器： <code>sudo apt-get install openssh-server</code>  
+            </p>
+             
+            <li>确认开启SSH服务</li>
+            <p>
+            查看22端口是否打开，否则按以下步骤启动服务器端的SSH服务：
+            <br>
+            启动服务： <code>sudo /etc/init.d/ssh start</code>
+            <br>
+            更改默认端口号： <code>sudo vim /etc/ssh/sshd_config</code>
+            </p>
+            <li>使用SSH登录</li>
+            本机输入以下命令登录远程服务器(例如ip地址为10.20.120.10的远程服务器)：<br>
+            <code>ssh user@10.20.120.10</code>
+            <br>
+            另外，可使用<br><code>ssh -Y user@10.20.120.10</code><br>即可使用远程服务器上的图形界面应用
+            一般情况下，接下来就要输入密码，在涉及大量文件传输操作时，频繁输入密码会十分不便。以下介绍如何免密码登录。
           </ul>
-          <p>这本教程中，我们将覆盖以上所有的疑问以及为什么和如何同步 <code>HashMap</code> 的原因？</p>
-          <h1 id="Why"><a href="#Why" class="headerlink" title="Why ?"></a>Why ?</h1>
+          
+          <h1 id="how"><a href="#how" class="headerlink" title="设置SSH免密码登录"></a>设置SSH免密码登录</h1>
           <p><code>Map</code> 对象是一个存储元素的关联的容器，通过唯一标识的 <code>key</code> 和映射的 <code>value</code>
             组成。如果你有一个非常高并发的应用，你可能想在不同的线程中修改或读取键值，那么理想的情况下是使用并发的 <code>HashMap</code>
             。最典型的例子就是生产者和消费者的读写处理。</p>
@@ -330,9 +335,9 @@ class="attr">faster</span></span></div></pre>
         </div>
       </article>
       <div class="text-center donation">
-        <div class="inner-donation"> <span class="btn-donation">支持一下</span>
+        <div class="inner-donation"> <span class="btn-donation">Donate</span>
           <div class="donation-body">
-            <div class="tip text-center">扫一扫，支持 Ruosi Zha</div>
+            <div class="tip text-center">Donate to Ruosi Zha</div>
             <ul class="theme.donation.items.length">
               <li class="item"> <img src="/img/wxpay.jpeg" alt=""> </li>
               <li class="item"> <img src="/img/alipay.jpeg" alt=""> </li>
@@ -344,7 +349,7 @@ class="attr">faster</span></span></div></pre>
     <a id="backTop" class="back-top"> <i class="icon-angle-up"></i> </a>
     <div class="modal" id="modal"> <span id="cover" class="cover hide"></span>
       <div id="modal-dialog" class="modal-dialog hide-dialog">
-        <div class="modal-header"> <span id="close" class="btn-close">关闭</span>
+        <div class="modal-header"> <span id="close" class="btn-close">Close</span>
         </div>
         <hr>
         <div class="modal-body">
