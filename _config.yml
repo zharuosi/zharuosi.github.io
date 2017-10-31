@@ -2,3 +2,6 @@ theme: jekyll-theme-minimal
 
 title: Ruosi Zha 
 description: Ph.D candidate  |  zharuosi@gmail.com  |  St.John's, Canada 
+
+show_downloads: false
+google_analytics: UA-109033688-1

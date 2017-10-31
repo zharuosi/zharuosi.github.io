@@ -1,26 +1,29 @@
 ![Myself](https://raw.githubusercontent.com/zharuosi/zharuosi.github.io/master/resume/profile-small.jpg)
 
 ### Education
-- Ph.D candidate at Memorial Uniersity of Newfoundland (2015 - Present) 
+- Memorial Uniersity of Newfoundland, Canada  
+  - Ph.D. Candidate (2015 - Present)
   - [Ocean & Naval Architecture Engineering](https://www.mun.ca/engineering/ona/)
   - [Adanced Marine Hydrodynamics Laboratory](http://www.engr.mun.ca/~qiuw/index_files/Page594.htm)
 
-- Master at Shanghai Jiao Tong University (2012 - 2015) 
+- Shanghai Jiao Tong University, China  
+  - Master of Engineering (2012 - 2015) 
   - Naval Architecture & Ocean Engineering
   - [Computational Marine Hydrodynamics Laboratory](http://dcwan.sjtu.edu.cn/)
   
-- Bachelor at Huazhong University of Science & Technology (2008 - 2012) 
+- Huazhong University of Science & Technology, China
+  - Bachelor of Engineering (2008 - 2012) 
   - [Naval Architecture & Ocean Engineering](http://ch.hust.edu.cn/)
-  - GPA: 3.5/4.0  &  Ranking: 15/200
+  - GPA: 3.52/4.00  &  Ranking: 15/200
 
 ---
 
 ### Research Highlights
-- Computational Fluid Dynamics & Marine hydrodynamics
+- Computational Fluid Dynamics & Marine/Ship hydrodynamics
 - Moving Particle Semi-implicit method & Lagrangian particle method
 - Fluid-Structure Interaction & Slamming & Wave impact
 - Added resistance in waves & Seakeeping & Multi-phase flow 
-- High performance ship (Catamaran)
+- High performance ship 
 
 ---
 
@@ -28,9 +31,9 @@
 [Google Scholar](https://scholar.google.ca/citations?user=ha5zv8IAAAAJ&hl=en)
 
 
-1. Zha, R., Qiu, W., & Peng, H. (2017, June). Solving 2D Fluid-Structure Interaction Problem by a Coupled Particle Method. In ASME 2017 36th International Conference on Ocean, Offshore and Arctic Engineering (pp. V07AT06A046-V07AT06A046). American Society of Mechanical Engineers.
+1. Zha, R. S., Qiu, W., & Peng, H. (2017, June). Solving 2D Fluid-Structure Interaction Problem by a Coupled Particle Method. In ASME 2017 36th International Conference on Ocean, Offshore and Arctic Engineering (pp. V07AT06A046-V07AT06A046). American Society of Mechanical Engineers.
 
-2. Zha, R., Peng, H., Qiu, W. (2017) Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWWFB 2017.
+2. Zha, R. S., Peng, H., Qiu, W. (2017) Solving 2D Coupled Water Entry Problem by an Improved MPS Method. IWWWFB 2017.
 
 3. ZHA, R. S., YE, H. X., SHEN, Z. R., WAN, D. C. (2015). Numerical computations of resistance of high speed catamaran in calm water. Journal of Hydrodynamics, Ser. B, 26(6), 930-938.
 
@@ -46,28 +49,29 @@
 
 ### Projects
 
--	Added resistance in waves for monohull and catamaran (Personal Research)
+- Added resistance in waves for monohull and catamaran (Personal Research)
 
-Added resistance and ship motions of Wigley ship models and Delft-372 catamaran advancing in regular head waves were investigated using the RANS solver naoe-FOAM-SJTU; the relations between added resistance coefficient and wave parameters were studied.
+  - Added resistance and ship motions of Wigley hulls and Delft-372 catamaran advancing in regular head waves were investigated using the RANS solver naoe-FOAM-SJTU; the relation between added resistance coefficient and wave parameters was investigated.
 
--	Ship resistance of vessels with different hull forms (Group Leader)
+- Ship resistance of vessels with different hull forms (Group Leader)
 
-Several conditions were considered (0.06<Fn<0.28); two draft conditions were calculated; the effects of different hull forms on resistance performance were studied, including bulb bow and dead wood; the error of resistance is less than 5%; 3D modeling, mesh generation, numerical computation, post processing, final report were completed. 
+  - Several conditions were considered (0.06<Fn<0.28); two draft conditions were calculated; the effects of different hull forms on resistance performance were studied, including bulb bow and dead wood; the error of resistance is less than 5%; 3D modeling, mesh generation, numerical computation, post processing, final report were completed. 
 
--	Resistance and seakeeping performance of research vessels (Cooperative Investigator) 
+- Resistance and seakeeping performance of research vessels (Cooperative Investigator) 
 
-The influences of special acoustic devices on flow field and resistance performance of research vessels in still water were studied; the motion and stability of the ship with bilge keel in beam sea conditions were simulated.
+  - The influences of special acoustic devices on flow field and resistance performance of research vessels in still water were studied; the motion and stability of the ship with bilge keel in beam sea conditions were simulated.
 
--	Numerical simulation of the separation of oil and water in a tank (Principle Investigator)
+- Numerical simulation of the separation of oil and water in a tank (Principle Investigator)
 
-Considered a portion of petroleum stored under a portion of water in a tank. The separating process of water and petroleum was simulated by OpenFOAM. In the next stage, the process of instilling petroleum and draining water was simulated. 
+  - Considered a portion of petroleum stored under a portion of water in a tank. The separating process of water and petroleum was simulated by OpenFOAM. In the next stage, the process of instilling petroleum and draining water was simulated. 
 
 ---
 
 ### Awards
 
 
+### Demo 
 
-
+- 2D Dam breaking with a rubber gate
 
 ![FSI](https://raw.githubusercontent.com/zharuosi/zharuosi.github.io/master/resume/db-rubber-multi.gif)
