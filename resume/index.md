@@ -1,3 +1,4 @@
+![Myself](https://raw.githubusercontent.com/zharuosi/zharuosi.github.io/master/resume/profile.jpg)
 
 ### Education
 - Ph.D candidate at Memorial Uniersity of Newfoundland (2015 - Present) 
@@ -69,4 +70,4 @@ Considered a portion of petroleum stored under a portion of water in a tank. The
 
 
 
-![image](https://github.com/zharuosi/zharuosi.github.io/blob/master/db-rubber-multi.gif)
+![FSI](https://raw.githubusercontent.com/zharuosi/zharuosi.github.io/master/resume/db-rubber-multi.gif)
