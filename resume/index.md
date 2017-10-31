@@ -1,4 +1,4 @@
-![Myself](https://raw.githubusercontent.com/zharuosi/zharuosi.github.io/master/resume/profile.jpg)
+![Myself](https://raw.githubusercontent.com/zharuosi/zharuosi.github.io/master/resume/profile-small.jpg)
 
 ### Education
 - Ph.D candidate at Memorial Uniersity of Newfoundland (2015 - Present) 
