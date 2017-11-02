@@ -68,8 +68,18 @@
 ---
 
 ### Awards
+- 2015  Outstanding Graduate of SJTU
+- 2014  National Scholarship of postgraduate
+- 2014  Sinopacific Ship Building Group Scholarship 
+- 2014  Completed International Summer School on Naval Architecture, Ocean Engineering and Mechanics, Shanghai, China
+- 2013  Class B Scholarship of postgraduate of SJTU
+- 2012  Outstanding Graduate of HUST
+- 2011  Merit Student of HUST
+- 2009  Scholarship for outstanding learning of HUST (Top 5%) 
 
-
+### Computer Skills
+Linux; OpenFOAM; C++; Fortran; Python; Shell Script; MATLAB; Tecplot; ParaView; AutoCAD; Pointwise; CATIA; HTML
+ 
 ### Demo 
 
 - 2D Dam breaking with a rubber gate
