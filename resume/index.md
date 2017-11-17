@@ -24,6 +24,7 @@
 - Fluid-Structure Interaction & Slamming & Wave impact
 - Added resistance in waves & Seakeeping & Multi-phase flow 
 - High performance ship 
+- High performance computing
 
 ---
 
