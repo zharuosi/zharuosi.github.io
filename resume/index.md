@@ -64,7 +64,7 @@
 
 - Numerical simulation of the separation of oil and water in a tank (Principle Investigator)
 
-  - Considered a portion of petroleum stored under a portion of water in a tank. The separating process of water and petroleum was simulated by OpenFOAM. In the next stage, the process of instilling petroleum and draining water was simulated. 
+  - Considered a portion of petroleum stored under a portion of water in a tank. The separating process of water and petroleum was simulated by OpenFOAM. The process of instilling petroleum and draining water was simulated. 
 
 ---
 
@@ -83,6 +83,6 @@ Linux; OpenFOAM; C++; Fortran; Python; Shell Script; MATLAB; Tecplot; ParaView; 
  
 ### Demo 
 
-- 2D Dam breaking with a rubber gate
+- 2-D Dam breaking with a rubber gate
 
 ![FSI](https://raw.githubusercontent.com/zharuosi/zharuosi.github.io/master/resume/db-rubber-multi.gif)
