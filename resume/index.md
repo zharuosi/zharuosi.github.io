@@ -83,6 +83,10 @@ Linux; OpenFOAM; C++; Fortran; Python; Shell Script; MATLAB; Tecplot; ParaView; 
  
 ### Demo 
 
+- 2-D Dam breaking
+
+![Dam breaking](https://github.com/zharuosi/zharuosi.github.io/raw/master/resume/dambreaking.gif)
+
 - 2-D Dam breaking with a rubber gate
 
 ![FSI](https://raw.githubusercontent.com/zharuosi/zharuosi.github.io/master/resume/db-rubber-multi.gif)
