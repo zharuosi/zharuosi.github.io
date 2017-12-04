@@ -20,8 +20,8 @@
 
 ### Research Highlights
 - Computational Fluid Dynamics & Marine/Ship hydrodynamics
-- Moving Particle Semi-implicit method & Lagrangian particle method
-- Fluid-Structure Interaction & Slamming & Wave impact
+- Moving particle semi-implicit method & Lagrangian particle method
+- Fluid-structure interaction & Slamming & Wave impact
 - Added resistance in waves & Seakeeping & Multi-phase flow 
 - High performance ship 
 - High performance computing
