@@ -79,7 +79,7 @@
 - 2009  Scholarship for outstanding learning of HUST (Top 5%) 
 
 ### Computer Skills
-Linux; OpenFOAM; C++; Fortran; Python; Shell Script; MATLAB; Tecplot; ParaView; AutoCAD; Pointwise; CATIA; HTML
+Star CCM+; OpenFOAM; Linux; C++; Fortran; Python; Shell Script; MATLAB; Tecplot; ParaView; AutoCAD; Pointwise; CATIA; HTML; LaTex
  
 ### Demo 
 
