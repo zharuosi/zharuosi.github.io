@@ -92,3 +92,7 @@ Star CCM+; OpenFOAM; Linux; C++; Fortran; Python; Shell Script; MATLAB; Tecplot;
 - 2-D Dam breaking with a rubber gate
 
 ![FSI](https://raw.githubusercontent.com/zharuosi/zharuosi.github.io/master/resume/db-rubber-multi.gif)
+
+- 2-D slamming of a rigid ship section
+
+![slamming rigid](https://raw.githubusercontent.com/zharuosi/zharuosi.github.io/master/resume/ship09-slamming2.gif)
