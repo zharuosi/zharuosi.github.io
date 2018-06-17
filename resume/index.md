@@ -3,7 +3,7 @@
 ### Education
 - Memorial Uniersity of Newfoundland, Canada  
   - Ph.D. Candidate (2015 - Present)
-  - [Ocean & Naval Architecture Engineering](https://www.mun.ca/engineering/ona/)
+  - [Ocean and Naval Architectural Engineering](https://www.mun.ca/engineering/ona/)
   - [Adanced Marine Hydrodynamics Laboratory](http://www.engr.mun.ca/~qiuw/index_files/Page594.htm)
 
 - Shanghai Jiao Tong University, China  
