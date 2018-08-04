@@ -71,14 +71,13 @@
 ---
 
 ### Awards
-- 2015  Outstanding Graduate of SJTU
-- 2014  National Scholarship of postgraduate
-- 2014  Sinopacific Ship Building Group Scholarship 
-- 2014  Completed International Summer School on Naval Architecture, Ocean Engineering and Mechanics, Shanghai, China
-- 2013  Class B Scholarship of postgraduate of SJTU
-- 2012  Outstanding Graduate of HUST
-- 2011  Merit Student of HUST
-- 2009  Scholarship for outstanding learning of HUST (Top 5%) 
+- 2015  Outstanding graduate student of SJTU
+- 2014  National scholarship for graduate student
+- 2014  Scholarship of Sinopacific Ship Building Group  
+- 2013  Class B Scholarship for graduate students of SJTU
+- 2012  Outstanding graduate student of HUST
+- 2011  Merit student of HUST
+- 2009  Scholarship for outstanding learning of HUST 
 
 ### Computer Skills
 Star CCM+; OpenFOAM; Linux; C++; Fortran; Python; Shell Script; MATLAB; Tecplot; ParaView; AutoCAD; Pointwise; CATIA; HTML; LaTex
