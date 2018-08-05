@@ -74,7 +74,7 @@
 - 2015  Outstanding graduate student of SJTU
 - 2014  National scholarship for graduate student
 - 2014  Scholarship of Sinopacific Ship Building Group  
-- 2013  Class B Scholarship for graduate students of SJTU
+- 2013  Class B scholarship for graduate students of SJTU
 - 2012  Outstanding graduate student of HUST
 - 2011  Merit student of HUST
 - 2009  Scholarship for outstanding learning of HUST 
