@@ -1,4 +1,3 @@
-![Myself](https://raw.githubusercontent.com/zharuosi/zharuosi.github.io/master/resume/profile-small.jpg)
 
 ### Education
 - Memorial Uniersity of Newfoundland, Canada  
